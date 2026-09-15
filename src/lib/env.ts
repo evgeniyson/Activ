@@ -1,19 +1,24 @@
 /**
  * Environment resolution. The app runs in one of two data modes:
  *
- *  - "supabase": NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY set.
- *    Auth, database and storage go through Supabase (production).
- *  - "local":    no Supabase configured. A file-backed store + demo session
- *    are used so the product runs end-to-end with zero configuration
- *    (development / preview only — never enable in production).
+ *  - "supabase": the default. Auth, database and storage go through Supabase
+ *    (project from env vars or the built-in public config).
+ *  - "local":    ACTIV_DATA_MODE=local. A file-backed store + demo session
+ *    for development without network access. Refused on Vercel.
  */
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "./supabase-config";
+
 export type DataMode = "supabase" | "local";
 
 export function getDataMode(): DataMode {
-  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return "supabase";
-  if (process.env.ACTIV_ALLOW_LOCAL_MODE === "0") {
-    throw new Error("Supabase is not configured and local mode is disabled (ACTIV_ALLOW_LOCAL_MODE=0).");
+  // Explicit opt-in to the file-backed demo store (development only).
+  if (process.env.ACTIV_DATA_MODE === "local") {
+    if (process.env.NODE_ENV === "production" && process.env.VERCEL) {
+      throw new Error("Local demo mode cannot run on Vercel. Unset ACTIV_DATA_MODE.");
+    }
+    return "local";
   }
+  if (SUPABASE_URL && SUPABASE_ANON_KEY) return "supabase";
   return "local";
 }
 

@@ -15,7 +15,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000. Without Supabase credentials the app runs in **local demo mode**: a file-backed store in `.data/` and a cookie session — any email/password signs you in. Use **Settings → Load demo portfolio** (or the empty-state button) to get a realistic portfolio.
+Open http://localhost:3000. By default the app talks to the production Supabase project (public URL + publishable key live in `src/lib/supabase-config.ts`; env vars override them). Set `ACTIV_DATA_MODE=local` to run the offline **local demo mode**: a file-backed store in `.data/` and a cookie session — any email/password signs you in. Use **Settings → Load demo portfolio** (or the empty-state button) to get a realistic portfolio.
 
 ## Production setup
 
@@ -26,7 +26,7 @@ Open http://localhost:3000. Without Supabase credentials the app runs in **local
    - `ANTHROPIC_API_KEY` for real AI identification (otherwise a deterministic demo identifier is used)
    - `CRON_SECRET` for `/api/cron/revalue` (schedule in `vercel.json`)
 3. Enable Google (and optionally Apple, `NEXT_PUBLIC_AUTH_APPLE=1`) in Supabase Auth, redirect URL `https://<host>/auth/callback`.
-4. Deploy to Vercel. Set `ACTIV_ALLOW_LOCAL_MODE=0` so the app refuses to boot without Supabase.
+4. Deploy to Vercel. Local demo mode is refused on Vercel automatically.
 
 ## Architecture
 

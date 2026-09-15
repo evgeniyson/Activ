@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "@/lib/supabase-config";
 
 const LOCAL_SESSION_COOKIE = "activ_local_session";
 const PROTECTED_PREFIXES = ["/app", "/onboarding"];
@@ -11,8 +12,9 @@ const AUTH_PAGES = ["/login", "/signup"];
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const localMode = process.env.ACTIV_DATA_MODE === "local";
+  const supabaseUrl = localMode ? undefined : SUPABASE_URL;
+  const supabaseKey = localMode ? undefined : SUPABASE_ANON_KEY;
 
   let response = NextResponse.next({ request });
   let authenticated = false;

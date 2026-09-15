@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getDataMode } from "@/lib/env";
+import { SUPABASE_URL } from "@/lib/supabase-config";
 import { createClient } from "@supabase/supabase-js";
 import { SupabaseStore } from "@/services/data/supabase-store";
 import { revalueAsset } from "@/features/assets/service";
@@ -25,7 +26,7 @@ export async function GET(req: NextRequest) {
   if (getDataMode() !== "supabase" || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return NextResponse.json({ error: "Cron requires Supabase + service role key." }, { status: 501 });
   }
-  const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
+  const admin = createClient(SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
   const store = new SupabaseStore(admin);
   const { data: profiles, error } = await admin.from("profiles").select("id").limit(5000);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
