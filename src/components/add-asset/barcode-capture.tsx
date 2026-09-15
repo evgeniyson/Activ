@@ -70,17 +70,17 @@ export function BarcodeCapture({ onCode }: { onCode: (code: string) => void }) {
 
   return (
     <div>
-      <span className="label-mono text-gray">Barcode</span>
-      <h1 className="mt-2 text-3xl font-extrabold display-tight sm:text-4xl">Scan the box.</h1>
-      <p className="mt-2 text-[15px] text-gray">EAN or UPC codes on the retail packaging. Works best with the original box.</p>
+      <span className="label-mono text-gray">Штрих-код</span>
+      <h1 className="mt-2 text-3xl font-extrabold display-tight sm:text-4xl">Отсканируйте коробку.</h1>
+      <p className="mt-2 text-[15px] text-gray">Коды EAN или UPC на упаковке. Лучше всего работает с оригинальной коробкой.</p>
       {supported ? (
         <div className="relative mt-6 aspect-[4/3] w-full overflow-hidden border border-ink bg-ink">
           <video ref={videoRef} playsInline muted className={`h-full w-full object-cover ${live ? "opacity-100" : "opacity-0"}`} />
           <div className="pointer-events-none absolute inset-x-8 top-1/2 h-px -translate-y-1/2 bg-orange" aria-hidden="true" />
-          {!live ? <p className="absolute inset-0 flex items-center justify-center text-sm text-paper/70">Starting camera…</p> : null}
+          {!live ? <p className="absolute inset-0 flex items-center justify-center text-sm text-paper/70">Запускаем камеру…</p> : null}
         </div>
       ) : (
-        <p className="mt-6 border border-dashed border-hair-strong p-4 text-sm text-gray">Live barcode scanning isn&apos;t available in this browser. Type the number printed under the barcode instead.</p>
+        <p className="mt-6 border border-dashed border-hair-strong p-4 text-sm text-gray">В этом браузере нет сканирования штрих-кодов с камеры. Введите цифры, напечатанные под штрих-кодом.</p>
       )}
       <form
         className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end"
@@ -89,11 +89,11 @@ export function BarcodeCapture({ onCode }: { onCode: (code: string) => void }) {
           if (manual.replace(/\D/g, "").length >= 8) onCode(manual);
         }}
       >
-        <Field label="Barcode number" htmlFor="barcode-input" className="flex-1">
+        <Field label="Номер штрих-кода" htmlFor="barcode-input" className="flex-1">
           <Input id="barcode-input" inputMode="numeric" placeholder="1959498368930" value={manual} onChange={(e) => setManual(e.target.value)} className="font-mono" />
         </Field>
         <Button type="submit" size="lg" variant="primary" className="h-12">
-          Look up
+          Найти
         </Button>
       </form>
     </div>

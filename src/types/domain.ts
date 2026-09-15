@@ -6,28 +6,29 @@ export type { CurrencyCode, AssetCategory };
 export const CONDITIONS = ["like_new", "excellent", "good", "fair", "poor"] as const;
 export type Condition = (typeof CONDITIONS)[number];
 export const CONDITION_LABELS: Record<Condition, string> = {
-  like_new: "Like New",
-  excellent: "Excellent",
-  good: "Good",
-  fair: "Fair",
-  poor: "Poor",
+  like_new: "Как новый",
+  excellent: "Отличное",
+  good: "Хорошее",
+  fair: "Среднее",
+  poor: "Плохое",
 };
 
 export const ASSET_STATUSES = ["active", "sold", "lost", "archived"] as const;
 export type AssetStatus = (typeof ASSET_STATUSES)[number];
 
-export const MARKET_REGIONS = ["EU", "US", "UK", "RU", "CH", "PL", "AE", "KZ", "TR"] as const;
+export const MARKET_REGIONS = ["RU", "KZ", "BY", "EU", "US", "UK", "AE", "TR", "CN"] as const;
 export type MarketRegion = (typeof MARKET_REGIONS)[number];
+export const DEFAULT_REGION: MarketRegion = "RU";
 export const REGION_LABELS: Record<MarketRegion, string> = {
-  EU: "European Union",
-  US: "United States",
-  UK: "United Kingdom",
-  RU: "Russia",
-  CH: "Switzerland",
-  PL: "Poland",
-  AE: "United Arab Emirates",
-  KZ: "Kazakhstan",
-  TR: "Türkiye",
+  RU: "Россия",
+  KZ: "Казахстан",
+  BY: "Беларусь",
+  EU: "Евросоюз",
+  US: "США",
+  UK: "Великобритания",
+  AE: "ОАЭ",
+  TR: "Турция",
+  CN: "Китай",
 };
 
 export interface Profile {
@@ -112,13 +113,13 @@ export interface AssetImage {
 export const EXPENSE_TYPES = ["repair", "accessory", "maintenance", "insurance", "subscription", "upgrade", "other"] as const;
 export type ExpenseType = (typeof EXPENSE_TYPES)[number];
 export const EXPENSE_LABELS: Record<ExpenseType, string> = {
-  repair: "Repair",
-  accessory: "Accessory",
-  maintenance: "Maintenance",
-  insurance: "Insurance",
-  subscription: "Subscription",
-  upgrade: "Upgrade",
-  other: "Other",
+  repair: "Ремонт",
+  accessory: "Аксессуар",
+  maintenance: "Обслуживание",
+  insurance: "Страховка",
+  subscription: "Подписка",
+  upgrade: "Апгрейд",
+  other: "Другое",
 };
 
 export interface AssetExpense {

@@ -5,7 +5,7 @@ import { ButtonLink, Button } from "@/components/ui/button";
 import { ConfidenceBadge } from "@/components/ui/badge";
 import { Money } from "@/components/ui/stat";
 import type { CreatedAssetSummary } from "@/features/assets/actions";
-import { formatMoney, formatPercent } from "@/lib/format";
+import { formatMoney, formatPercent, plural } from "@/lib/format";
 
 /** The WOW moment. Four numbers, staggered in. */
 export function ResultStep({ result, onAddAnother, preview }: { result: CreatedAssetSummary; onAddAnother: () => void; preview: string | null }) {
@@ -29,19 +29,19 @@ export function ResultStep({ result, onAddAnother, preview }: { result: CreatedA
           </div>
         ) : null}
         <div>
-          <span className="label-mono text-gray">Added to your portfolio</span>
+          <span className="label-mono text-gray">Добавлено в портфель</span>
           <h1 className="text-2xl font-extrabold display-tight sm:text-3xl">{result.name}</h1>
         </div>
       </motion.div>
 
       <div className="mt-6 grid gap-px border border-ink bg-ink sm:grid-cols-2">
         <motion.div {...item(1)} className="bg-paper p-5 sm:p-6">
-          <span className="label-mono text-gray">You paid</span>
+          <span className="label-mono text-gray">Вы заплатили</span>
           <p className="tnum mt-2 text-4xl font-extrabold display-tight">{formatMoney(result.purchasePrice, cur)}</p>
-          <p className="label-mono mt-2 text-gray-2">{result.daysOwned} days ago</p>
+          <p className="label-mono mt-2 text-gray-2">{plural(result.daysOwned, ["день", "дня", "дней"])} назад</p>
         </motion.div>
         <motion.div {...item(2)} className="bg-ink p-5 text-paper sm:p-6">
-          <span className="label-mono text-paper/60">Today it&apos;s worth approximately</span>
+          <span className="label-mono text-paper/60">Сегодня стоит примерно</span>
           <p className="tnum mt-2 text-4xl font-extrabold display-tight">{result.currentValue != null ? <Money amount={result.currentValue} currency={cur} animate /> : "—"}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {result.lowEstimate != null && result.highEstimate != null ? (
@@ -53,29 +53,29 @@ export function ResultStep({ result, onAddAnother, preview }: { result: CreatedA
           </div>
         </motion.div>
         <motion.div {...item(3)} className="bg-orange p-5 sm:p-6">
-          <span className="label-mono text-ink/70">{loss != null && loss < 0 ? "It gained" : "You've lost"}</span>
+          <span className="label-mono text-ink/70">{loss != null && loss < 0 ? "Подорожал на" : "Вы потеряли"}</span>
           <p className="tnum mt-2 text-4xl font-extrabold display-tight">{loss != null ? formatMoney(Math.abs(loss), cur) : "—"}</p>
-          <p className="label-mono mt-2 text-ink/70">{lossPct != null ? `${formatPercent(Math.abs(lossPct))} of the purchase price` : ""}</p>
+          <p className="label-mono mt-2 text-ink/70">{lossPct != null ? `${formatPercent(Math.abs(lossPct))} от цены покупки` : ""}</p>
         </motion.div>
         <motion.div {...item(4)} className="bg-paper p-5 sm:p-6">
-          <span className="label-mono text-gray">Average ownership cost</span>
+          <span className="label-mono text-gray">Средняя стоимость владения</span>
           <p className="tnum mt-2 text-4xl font-extrabold display-tight">
-            {result.dailyCost != null ? formatMoney(result.dailyCost, cur, { decimals: 2 }) : "—"}
-            <span className="text-base font-semibold text-gray"> / day</span>
+            {result.dailyCost != null ? formatMoney(result.dailyCost, cur, { decimals: 0 }) : "—"}
+            <span className="text-base font-semibold text-gray"> / день</span>
           </p>
-          <p className="label-mono mt-2 text-gray-2">Purchase − value, per day owned</p>
+          <p className="label-mono mt-2 text-gray-2">Покупка − стоимость, за день владения</p>
         </motion.div>
       </div>
 
       <motion.div {...item(5)} className="mt-6 flex flex-col gap-3 sm:flex-row">
         <ButtonLink href={`/app/assets/${result.id}`} size="lg" variant="primary" className="flex-1">
-          Open asset →
+          Открыть актив →
         </ButtonLink>
         <Button size="lg" variant="outline" onClick={onAddAnother} className="flex-1">
-          Add another
+          Добавить ещё
         </Button>
       </motion.div>
-      <p className="mt-4 text-[12px] text-gray-2">Estimated market value. Estimates are based on available market data and may differ from actual sale prices.</p>
+      <p className="mt-4 text-[12px] text-gray-2">Оценочная рыночная стоимость. Оценки основаны на доступных рыночных данных и могут отличаться от фактической цены продажи.</p>
     </div>
   );
 }

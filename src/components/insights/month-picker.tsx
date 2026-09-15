@@ -8,7 +8,7 @@ export function MonthPicker({ months, value }: { months: string[]; value: string
   return (
     <div className="relative">
       <select
-        aria-label="Report month"
+        aria-label="Месяц отчёта"
         value={value}
         onChange={(e) => router.push(`/app/insights?month=${e.target.value}`)}
         className="label-mono-md h-9 appearance-none border border-paper/40 bg-transparent pl-3 pr-8 text-paper outline-none hover:border-paper focus:border-orange rounded-none"

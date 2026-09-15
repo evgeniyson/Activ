@@ -10,20 +10,20 @@ import { signOut } from "@/features/auth/actions";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 
 const NAV = [
-  { href: "/app", label: "Overview", icon: Home, exact: true },
-  { href: "/app/assets", label: "Assets", icon: LayoutGrid },
-  { href: "/app/insights", label: "Insights", icon: Sparkles },
-  { href: "/app/activity", label: "Activity", icon: Activity },
-  { href: "/app/notifications", label: "Notifications", icon: Bell },
-  { href: "/app/settings", label: "Settings", icon: Settings },
+  { href: "/app", label: "Обзор", icon: Home, exact: true },
+  { href: "/app/assets", label: "Активы", icon: LayoutGrid },
+  { href: "/app/insights", label: "Аналитика", icon: Sparkles },
+  { href: "/app/activity", label: "События", icon: Activity },
+  { href: "/app/notifications", label: "Уведомления", icon: Bell },
+  { href: "/app/settings", label: "Настройки", icon: Settings },
 ];
 
 const MOBILE_NAV = [
-  { href: "/app", label: "Home", icon: Home, exact: true },
-  { href: "/app/assets", label: "Assets", icon: LayoutGrid },
-  { href: "/app/assets/new", label: "Add", icon: Plus, primary: true },
-  { href: "/app/insights", label: "Insights", icon: Sparkles },
-  { href: "/app/settings", label: "Profile", icon: User },
+  { href: "/app", label: "Главная", icon: Home, exact: true },
+  { href: "/app/assets", label: "Активы", icon: LayoutGrid },
+  { href: "/app/assets/new", label: "Добавить", icon: Plus, primary: true },
+  { href: "/app/insights", label: "Аналитика", icon: Sparkles },
+  { href: "/app/settings", label: "Профиль", icon: User },
 ];
 
 export function AppShell({ children, user, unreadCount, localMode }: { children: ReactNode; user: { email: string | null; name: string | null; avatarUrl: string | null }; unreadCount: number; localMode: boolean }) {
@@ -40,7 +40,7 @@ export function AppShell({ children, user, unreadCount, localMode }: { children:
           <Wordmark href="/app" height={18} priority />
           <span className="label-mono text-gray-2">v0.1</span>
         </div>
-        <nav className="flex flex-1 flex-col gap-0.5 p-3" aria-label="Main">
+        <nav className="flex flex-1 flex-col gap-0.5 p-3" aria-label="Основное меню">
           {NAV.map(({ href, label, icon: Icon, exact }) => {
             const active = isActive(href, exact);
             return (
@@ -63,25 +63,25 @@ export function AppShell({ children, user, unreadCount, localMode }: { children:
           })}
           <Link href="/app/assets/new" className="mt-3 flex h-11 items-center justify-center gap-2 bg-orange px-3 text-sm font-bold text-ink transition-colors hover:bg-orange-2">
             <Plus className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
-            Add Asset
+            Добавить актив
           </Link>
         </nav>
         <div className="border-t border-hair p-3">
           <InstallPrompt />
           {localMode ? (
-            <p className="label-mono mb-3 border border-dashed border-hair-strong px-2 py-2 text-gray">Local demo mode · no Supabase</p>
+            <p className="label-mono mb-3 border border-dashed border-hair-strong px-2 py-2 text-gray">Локальный демо-режим · без Supabase</p>
           ) : null}
           <div className="flex items-center gap-3 px-1">
             <span className="flex h-9 w-9 items-center justify-center bg-ink font-bold text-paper" aria-hidden="true">
               {initials}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">{user.name ?? "Your account"}</p>
+              <p className="truncate text-sm font-semibold">{user.name ?? "Ваш аккаунт"}</p>
               <p className="truncate text-[12px] text-gray">{user.email}</p>
             </div>
             <form action={signOut}>
-              <button type="submit" className="label-mono text-gray hover:text-ink" title="Sign out">
-                Out
+              <button type="submit" className="label-mono text-gray hover:text-ink" title="Выйти">
+                Выйти
               </button>
             </form>
           </div>
@@ -97,16 +97,16 @@ export function AppShell({ children, user, unreadCount, localMode }: { children:
             </div>
             <div className="hidden flex-1 lg:block" />
             <div className="ml-auto flex items-center gap-1">
-              <Link href="/app/search" aria-label="Search assets" className="flex h-10 w-10 items-center justify-center text-ink hover:bg-black/5">
+              <Link href="/app/search" aria-label="Поиск по активам" className="flex h-10 w-10 items-center justify-center text-ink hover:bg-black/5">
                 <Search className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
               </Link>
-              <Link href="/app/notifications" aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ""}`} className="relative flex h-10 w-10 items-center justify-center text-ink hover:bg-black/5">
+              <Link href="/app/notifications" aria-label={`Уведомления${unreadCount ? `, непрочитанных: ${unreadCount}` : ""}`} className="relative flex h-10 w-10 items-center justify-center text-ink hover:bg-black/5">
                 <Bell className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
                 {unreadCount > 0 ? <span className="absolute right-2 top-2 h-2 w-2 bg-orange" /> : null}
               </Link>
               <Link href="/app/assets/new" className="ml-1 hidden h-10 items-center gap-2 bg-ink px-4 text-sm font-bold text-paper hover:bg-ink-2 sm:flex lg:hidden">
                 <Plus className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
-                Add
+                Добавить
               </Link>
             </div>
           </div>
@@ -119,7 +119,7 @@ export function AppShell({ children, user, unreadCount, localMode }: { children:
 
       {/* Mobile bottom nav */}
       {!isAddFlow ? (
-        <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-hair bg-paper/95 backdrop-blur-md lg:hidden" aria-label="Main">
+        <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-hair bg-paper/95 backdrop-blur-md lg:hidden" aria-label="Основное меню">
           <div className="grid h-16 grid-cols-5">
             {MOBILE_NAV.map(({ href, label, icon: Icon, exact, primary }) => {
               const active = isActive(href, exact) && !primary;

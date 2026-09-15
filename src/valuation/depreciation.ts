@@ -98,15 +98,15 @@ export const CONDITION_FACTORS: Record<Condition, number> = {
 
 /** Price level of the used market relative to the EU baseline (in EUR terms). */
 export const REGION_FACTORS: Record<MarketRegion, number> = {
+  RU: 1.12,
+  KZ: 1.08,
+  BY: 1.1,
   EU: 1.0,
   US: 0.96,
   UK: 0.98,
-  RU: 1.12,
-  CH: 1.05,
-  PL: 0.97,
   AE: 0.95,
-  KZ: 1.08,
   TR: 1.15,
+  CN: 0.9,
 };
 
 /**

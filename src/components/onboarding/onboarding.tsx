@@ -10,19 +10,19 @@ import { cn } from "@/lib/cn";
 const SCREENS = [
   {
     eyebrow: "01 / 03",
-    title: "Know what your stuff is really worth.",
-    body: "Phones, laptops, cameras, consoles — anything with a price tag has a market value that changes every week. АКТИВ tracks it for you.",
+    title: "Узнайте, сколько на самом деле стоят ваши вещи.",
+    body: "Телефоны, ноутбуки, камеры, консоли — у всего, что имеет ценник, есть рыночная стоимость, и она меняется каждую неделю. АКТИВ следит за ней за вас.",
   },
   {
     eyebrow: "02 / 03",
-    title: "Track the four numbers that matter.",
-    body: "For every item: market value today, total depreciation, what owning it costs you per day, and what you could sell it for.",
-    list: ["Market Value", "Depreciation", "Ownership Cost", "Resale Value"],
+    title: "Четыре главные цифры для каждой вещи.",
+    body: "Рыночная стоимость сегодня, общее обесценивание, во сколько обходится владение в день и за сколько можно продать.",
+    list: ["Рыночная стоимость", "Обесценивание", "Стоимость владения", "Цена продажи"],
   },
   {
     eyebrow: "03 / 03",
-    title: "Add your first asset.",
-    body: "Point the camera at something you own. In a few seconds you'll see what you paid, what it's worth now, and what it has cost you.",
+    title: "Добавьте первый актив.",
+    body: "Наведите камеру на что-нибудь своё. Через несколько секунд вы увидите, сколько заплатили, сколько это стоит сейчас и во сколько вам обошлось.",
   },
 ];
 
@@ -38,7 +38,7 @@ export function Onboarding() {
       <div className="flex items-center justify-between px-5 py-6 sm:px-10">
         <Wordmark height={18} priority />
         <button type="button" className="label-mono-md text-gray hover:text-ink" onClick={() => start(() => completeOnboardingAction("dashboard"))}>
-          Skip
+          Пропустить
         </button>
       </div>
 
@@ -68,12 +68,12 @@ export function Onboarding() {
               {last ? (
                 <div className="mt-8 grid gap-px border border-ink bg-ink sm:grid-cols-2">
                   <div className="bg-paper p-5">
-                    <span className="label-mono text-gray">You paid</span>
-                    <p className="tnum mt-1 text-3xl font-extrabold display-tight">€1,299</p>
+                    <span className="label-mono text-gray">Вы заплатили</span>
+                    <p className="tnum mt-1 text-3xl font-extrabold display-tight">139 990 ₽</p>
                   </div>
                   <div className="bg-ink p-5 text-paper">
-                    <span className="label-mono text-paper/60">Today it&apos;s worth</span>
-                    <p className="tnum mt-1 text-3xl font-extrabold display-tight">≈ €930</p>
+                    <span className="label-mono text-paper/60">Сегодня стоит</span>
+                    <p className="tnum mt-1 text-3xl font-extrabold display-tight">≈ 96 000 ₽</p>
                   </div>
                 </div>
               ) : null}
@@ -83,7 +83,7 @@ export function Onboarding() {
       </div>
 
       <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-4 px-5 py-8 sm:px-10">
-        <div className="flex gap-1.5" aria-label={`Step ${i + 1} of ${SCREENS.length}`}>
+        <div className="flex gap-1.5" aria-label={`Шаг ${i + 1} из ${SCREENS.length}`}>
           {SCREENS.map((_, k) => (
             <span key={k} className={cn("h-1.5 w-8 transition-colors duration-300", k <= i ? "bg-ink" : "bg-hair")} />
           ))}
@@ -91,21 +91,21 @@ export function Onboarding() {
         <div className="flex gap-2">
           {i > 0 ? (
             <Button variant="ghost" onClick={() => setI(i - 1)}>
-              Back
+              Назад
             </Button>
           ) : null}
           {last ? (
             <>
               <Button variant="outline" loading={pending} onClick={() => start(() => completeOnboardingAction("dashboard"))}>
-                Later
+                Позже
               </Button>
               <Button variant="accent" size="lg" loading={pending} onClick={() => start(() => completeOnboardingAction("scan"))}>
-                Scan an Item →
+                Отсканировать предмет →
               </Button>
             </>
           ) : (
             <Button size="lg" onClick={() => setI(i + 1)}>
-              Continue →
+              Продолжить →
             </Button>
           )}
         </div>

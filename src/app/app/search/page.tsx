@@ -6,7 +6,7 @@ import { ensureProfile } from "@/features/profile/service";
 import { getStore } from "@/services/data";
 import { requireUser } from "@/services/auth/session";
 
-export const metadata: Metadata = { title: "Search" };
+export const metadata: Metadata = { title: "Поиск" };
 export const dynamic = "force-dynamic";
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
@@ -17,7 +17,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const overview = await getPortfolioOverview(store, user.id, profile);
   return (
     <>
-      <PageHeader index="Q" title="Search" description="Model, manufacturer, category, notes or serial number." />
+      <PageHeader index="Q" title="Поиск" description="Модель, производитель, категория, заметки или серийный номер." />
       <AssetsList items={overview.items} currency={overview.currency} initialQuery={q ?? ""} />
     </>
   );

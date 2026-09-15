@@ -4,12 +4,12 @@ import { PageHeader } from "@/components/shell/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Panel } from "@/components/ui/panel";
 import { cn } from "@/lib/cn";
-import { formatDate } from "@/lib/dates";
+import { formatDate, formatMonth } from "@/lib/dates";
 import { formatMoney } from "@/lib/format";
 import { getStore } from "@/services/data";
 import { requireUser } from "@/services/auth/session";
 
-export const metadata: Metadata = { title: "Activity" };
+export const metadata: Metadata = { title: "События" };
 export const dynamic = "force-dynamic";
 
 export default async function ActivityPage() {
@@ -26,18 +26,18 @@ export default async function ActivityPage() {
 
   return (
     <>
-      <PageHeader index="006" title="Activity" description="Everything that happened across your portfolio." />
+      <PageHeader index="006" title="События" description="Всё, что происходило с вашим портфелем." />
       {events.length ? (
         [...groups.entries()].map(([month, list]) => (
           <section key={month} className="mb-6">
-            <h2 className="label-mono mb-2 text-gray">{formatDate(`${month}-01`, { day: undefined, month: "long", year: "numeric" })}</h2>
+            <h2 className="label-mono mb-2 text-gray">{formatMonth(`${month}-01`)}</h2>
             <Panel>
               {list.map((e) => (
                 <Link key={e.id} href={`/app/assets/${e.assetId}`} className="flex items-center gap-4 border-b border-hair px-5 py-3.5 last:border-b-0 hover:bg-black/[0.03]">
                   <span className={cn("h-2 w-2 shrink-0", e.type === "valuation" ? "bg-orange" : e.type === "sold" ? "bg-orange-3" : "bg-ink")} aria-hidden="true" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold">
-                      {names.get(e.assetId) ?? "Asset"} <span className="font-medium text-gray">· {e.title}</span>
+                      {names.get(e.assetId) ?? "Актив"} <span className="font-medium text-gray">· {e.title}</span>
                     </p>
                     <p className="label-mono text-gray-2">
                       {formatDate(e.date)}
@@ -51,7 +51,7 @@ export default async function ActivityPage() {
           </section>
         ))
       ) : (
-        <EmptyState title="No activity yet." description="Purchases, valuations, expenses and sales will show up here as a single feed." />
+        <EmptyState title="Событий пока нет." description="Покупки, оценки, расходы и продажи появятся здесь единой лентой." />
       )}
     </>
   );

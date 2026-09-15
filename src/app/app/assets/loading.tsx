@@ -2,7 +2,7 @@ import { AssetRowSkeleton, Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <div aria-busy="true" aria-label="Loading">
+    <div aria-busy="true" aria-label="Загрузка">
       <Skeleton className="mb-3 h-9 w-40" />
       <Skeleton className="mb-8 h-3.5 w-64" />
       <Skeleton className="mb-4 h-12 w-full" />

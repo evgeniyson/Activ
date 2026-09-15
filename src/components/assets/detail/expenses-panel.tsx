@@ -30,12 +30,12 @@ export function ExpensesPanel({ assetId, expenses, currency, defaultCurrency }: 
     e.preventDefault();
     setError(null);
     start(async () => {
-      const res = await addExpenseAction({ assetId, type, title, amount, currency: cur, date });
+      const res = await addExpenseAction({ assetId, type, title, amount: amount.replace(/\s/g, "").replace(",", "."), currency: cur, date });
       if (!res.ok) {
         setError(res.error);
         return;
       }
-      toast.push("Expense added — ownership cost updated.", "success");
+      toast.push("Расход добавлен — стоимость владения пересчитана.", "success");
       setOpen(false);
       setTitle("");
       setAmount("");
@@ -46,11 +46,11 @@ export function ExpensesPanel({ assetId, expenses, currency, defaultCurrency }: 
     <Panel>
       <PanelHeader
         index="E"
-        title="Expenses"
-        subtitle={expenses.length ? `${formatMoney(total, currency)} added to the cost of ownership` : "Repairs, accessories, maintenance — they all count."}
+        title="Расходы"
+        subtitle={expenses.length ? `${formatMoney(total, currency)} добавлено к стоимости владения` : "Ремонт, аксессуары, обслуживание — всё это считается."}
         action={
           <Button size="sm" variant="outline" onClick={() => setOpen(true)}>
-            <Plus className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden="true" /> Add
+            <Plus className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden="true" /> Добавить
           </Button>
         }
       />
@@ -67,7 +67,7 @@ export function ExpensesPanel({ assetId, expenses, currency, defaultCurrency }: 
               <span className="tnum text-sm font-bold">{formatMoney(e.amount, e.currency)}</span>
               <button
                 type="button"
-                aria-label={`Delete ${e.title}`}
+                aria-label={`Удалить «${e.title}»`}
                 className="flex h-8 w-8 items-center justify-center text-gray-2 hover:text-orange-3"
                 onClick={() =>
                   start(async () => {
@@ -82,12 +82,12 @@ export function ExpensesPanel({ assetId, expenses, currency, defaultCurrency }: 
           ))}
         </ul>
       ) : (
-        <p className="px-5 py-6 text-sm text-gray">No expenses yet. Add a repair or an accessory and the daily ownership cost recalculates instantly.</p>
+        <p className="px-5 py-6 text-sm text-gray">Расходов пока нет. Добавьте ремонт или аксессуар — дневная стоимость владения пересчитается мгновенно.</p>
       )}
 
-      <Sheet open={open} onClose={() => setOpen(false)} title="Add expense" description="Included in the cost of ownership.">
+      <Sheet open={open} onClose={() => setOpen(false)} title="Добавить расход" description="Учитывается в стоимости владения.">
         <form onSubmit={submit} className="flex flex-col gap-4">
-          <Field label="Type">
+          <Field label="Тип">
             <Select value={type} onChange={(e) => setType(e.target.value as ExpenseType)}>
               {EXPENSE_TYPES.map((t) => (
                 <option key={t} value={t}>
@@ -96,14 +96,14 @@ export function ExpensesPanel({ assetId, expenses, currency, defaultCurrency }: 
               ))}
             </Select>
           </Field>
-          <Field label="What was it?" htmlFor="exp-title">
-            <Input id="exp-title" required placeholder="Battery replacement" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <Field label="Что это было?" htmlFor="exp-title">
+            <Input id="exp-title" required placeholder="Замена аккумулятора" value={title} onChange={(e) => setTitle(e.target.value)} />
           </Field>
           <div className="grid grid-cols-[1fr_auto] gap-3">
-            <Field label="Amount" htmlFor="exp-amount">
-              <InputWithPrefix id="exp-amount" prefix={CURRENCIES[cur].symbol} required inputMode="decimal" placeholder="149" value={amount} onChange={(e) => setAmount(e.target.value)} />
+            <Field label="Сумма" htmlFor="exp-amount">
+              <InputWithPrefix id="exp-amount" prefix={CURRENCIES[cur].symbol} required inputMode="decimal" placeholder="14 900" value={amount} onChange={(e) => setAmount(e.target.value)} />
             </Field>
-            <Field label="Currency">
+            <Field label="Валюта">
               <Select value={cur} onChange={(e) => setCur(e.target.value as CurrencyCode)} className="w-24">
                 {CURRENCY_CODES.map((c) => (
                   <option key={c} value={c}>
@@ -113,12 +113,12 @@ export function ExpensesPanel({ assetId, expenses, currency, defaultCurrency }: 
               </Select>
             </Field>
           </div>
-          <Field label="Date" htmlFor="exp-date">
+          <Field label="Дата" htmlFor="exp-date">
             <Input id="exp-date" type="date" required value={date} max={toISODate(new Date())} onChange={(e) => setDate(e.target.value)} />
           </Field>
           {error ? <p className="text-sm font-medium text-orange-3">{error}</p> : null}
           <Button type="submit" loading={pending} size="lg" className="mt-2">
-            Add expense
+            Добавить расход
           </Button>
         </form>
       </Sheet>

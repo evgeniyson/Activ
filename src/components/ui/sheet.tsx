@@ -34,7 +34,7 @@ export function Sheet({ open, onClose, title, children, className, description }
         <div className="fixed inset-0 z-[90] flex items-end justify-center sm:items-center sm:p-6">
           <motion.button
             type="button"
-            aria-label="Close"
+            aria-label="Закрыть"
             className="absolute inset-0 bg-ink/50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -60,7 +60,7 @@ export function Sheet({ open, onClose, title, children, className, description }
                   </h2>
                   {description ? <p className="mt-1 text-[13px] text-gray">{description}</p> : null}
                 </div>
-                <button type="button" onClick={onClose} className="-mr-2 -mt-1 flex h-9 w-9 items-center justify-center text-gray hover:text-ink" aria-label="Close">
+                <button type="button" onClick={onClose} className="-mr-2 -mt-1 flex h-9 w-9 items-center justify-center text-gray hover:text-ink" aria-label="Закрыть">
                   <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
                     <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>

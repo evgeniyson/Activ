@@ -1,4 +1,4 @@
-import { convert, roundMarketPrice } from "@/lib/currency";
+import { CURRENCIES, convert, roundMarketPrice } from "@/lib/currency";
 import { monthsBetween, parseISODate } from "@/lib/dates";
 import { signedHash } from "@/lib/hash";
 import { getCatalogProduct, matchCatalog, pickVariant, type CatalogProduct, type CatalogVariant } from "../catalog";
@@ -30,7 +30,7 @@ import type { ProviderEstimate, ValuationProvider, ValuationRequest } from "../t
  */
 export class InternalPricingProvider implements ValuationProvider {
   readonly id = "internal" as const;
-  readonly name = "Internal pricing model";
+  readonly name = "Внутренняя модель";
   readonly weight = 1;
 
   isAvailable() {
@@ -86,9 +86,9 @@ export class InternalPricingProvider implements ValuationProvider {
 
     return finalize(req, marketEur, confidence, comparables, product, {
       notes: [
-        `Matched to ${product.manufacturer} ${product.model}${variant ? ` (${variant.name})` : ""}.`,
-        `Launch price €${launch.toLocaleString("en-IE")}, on the market for ${Math.round(ageMonths)} months.`,
-        successor ? `A newer generation (${successor.model}) is already available.` : "No successor on the market yet.",
+        `Сопоставлено с ${product.manufacturer} ${product.model}${variant ? ` (${variant.name})` : ""}.`,
+        `Цена на старте продаж ${Math.round(launch * REGION_FACTORS[req.region] * convert(1, "EUR", req.currency)).toLocaleString("ru-RU")} ${CURRENCIES[req.currency].symbol} (${Math.round(launch).toLocaleString("ru-RU")} €), на рынке ${Math.round(ageMonths)} мес.`,
+        successor ? `Уже доступно новое поколение (${successor.model}).` : "Преемника на рынке пока нет.",
       ],
     });
   }
@@ -117,8 +117,8 @@ export class InternalPricingProvider implements ValuationProvider {
     const confidence = known ? 0.5 : 0.42;
     return finalize(req, marketEur, confidence, known ? 6 : 3, null, {
       notes: [
-        "No catalog match — the estimate is derived from your purchase price and the category depreciation curve.",
-        "Add the exact model to improve accuracy, or set the value manually.",
+        "Модель не найдена в каталоге — оценка построена от вашей цены покупки и кривой амортизации категории.",
+        "Укажите точную модель для большей точности или задайте стоимость вручную.",
       ],
     });
   }

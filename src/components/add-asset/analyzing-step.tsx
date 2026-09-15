@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Check } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 
-const STAGES = ["Analyzing image", "Identifying product", "Matching specifications", "Estimating market value"];
+const STAGES = ["Анализируем изображение", "Определяем продукт", "Сопоставляем характеристики", "Оцениваем рыночную стоимость"];
 
 /**
  * Staged progress. Stages advance on a short timer so the user sees
@@ -38,7 +38,7 @@ export function AnalyzingStep({ preview, done, error, recognized, onContinue, on
       <div className="relative aspect-[4/5] w-full overflow-hidden border border-ink bg-ink sm:aspect-square">
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview} alt="Your photo" className="h-full w-full object-cover" />
+          <img src={preview} alt="Ваше фото" className="h-full w-full object-cover" />
         ) : (
           <div className="grid-dots h-full w-full opacity-30" />
         )}
@@ -53,8 +53,8 @@ export function AnalyzingStep({ preview, done, error, recognized, onContinue, on
         ) : null}
       </div>
       <div>
-        <span className="label-mono text-gray">{failed ? "Hmm" : "Working"}</span>
-        <h1 className="mt-2 text-3xl font-extrabold display-tight">{failed ? "We couldn't identify it." : "Identifying…"}</h1>
+        <span className="label-mono text-gray">{failed ? "Хм" : "Работаем"}</span>
+        <h1 className="mt-2 text-3xl font-extrabold display-tight">{failed ? "Не удалось распознать." : "Распознаём…"}</h1>
         <ol className="mt-6 flex flex-col gap-3" aria-live="polite">
           {STAGES.map((label, i) => {
             const state = failed && i >= shownStage ? "failed" : i < shownStage ? "done" : i === shownStage ? "active" : "pending";
@@ -70,13 +70,13 @@ export function AnalyzingStep({ preview, done, error, recognized, onContinue, on
         </ol>
         {failed ? (
           <div className="mt-6 border border-hair bg-paper p-4">
-            <p className="text-sm text-gray">{error ?? "The photo doesn't seem to contain a product we can recognise. Try a clearer shot with the whole item in frame, or add it manually."}</p>
+            <p className="text-sm text-gray">{error ?? "Похоже, на фото нет продукта, который мы можем распознать. Попробуйте более чёткий снимок со всем предметом в кадре или добавьте вручную."}</p>
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
               <Button variant="primary" onClick={onRetry} className="flex-1">
-                Try another photo
+                Другое фото
               </Button>
               <Button variant="outline" onClick={onManual} className="flex-1">
-                Add manually
+                Добавить вручную
               </Button>
             </div>
           </div>

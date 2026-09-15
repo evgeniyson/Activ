@@ -19,6 +19,7 @@ ${CATALOG.map((p) => `  - ${p.manufacturer} ${p.model}${p.variants ? ` [${p.vari
   .map((c) => `${c.id}: ${c.specKeys.join(", ")}`)
   .join("; ")}.
 - If the image has no identifiable product, set recognized=false and explain in notes.
+- The user speaks Russian: write "notes" and every clarification "question" in Russian; keep option values as canonical product spellings (e.g. "256 GB", "Not sure" → "Не уверен").
 - Keep notes to one short sentence.`;
 
 export class ClaudeVisionProvider implements IdentificationProvider {
@@ -35,7 +36,7 @@ export class ClaudeVisionProvider implements IdentificationProvider {
   }
 
   async identify(input: { image: Buffer; mimeType: string; hint?: string }): Promise<IdentificationResult> {
-    if (!this.isAvailable()) throw new IdentificationError("AI identification is not configured.", "unavailable");
+    if (!this.isAvailable()) throw new IdentificationError("AI-распознавание не настроено.", "unavailable");
     const mediaType = normalizeMime(input.mimeType);
     let response;
     try {
@@ -49,20 +50,20 @@ export class ClaudeVisionProvider implements IdentificationProvider {
             role: "user",
             content: [
               { type: "image", source: { type: "base64", media_type: mediaType, data: input.image.toString("base64") } },
-              { type: "text", text: input.hint ? `Identify this item. User hint: ${input.hint}` : "Identify this item." },
+              { type: "text", text: input.hint ? `Identify this item. User hint: ${input.hint}` : "Identify this item. Answer notes/questions in Russian." },
             ],
           },
         ],
       });
     } catch (err) {
-      if (err instanceof Anthropic.APIConnectionTimeoutError) throw new IdentificationError("The AI took too long to answer. Try again or add the item manually.", "timeout");
-      if (err instanceof Anthropic.RateLimitError) throw new IdentificationError("AI identification is busy right now. Try again in a moment.", "provider_error");
-      if (err instanceof Anthropic.APIError) throw new IdentificationError(`AI identification failed (${err.status ?? "error"}).`, "provider_error");
-      throw new IdentificationError("AI identification failed.", "provider_error");
+      if (err instanceof Anthropic.APIConnectionTimeoutError) throw new IdentificationError("AI отвечает слишком долго. Попробуйте ещё раз или добавьте вручную.", "timeout");
+      if (err instanceof Anthropic.RateLimitError) throw new IdentificationError("AI-распознавание сейчас перегружено. Попробуйте через минуту.", "provider_error");
+      if (err instanceof Anthropic.APIError) throw new IdentificationError(`Ошибка AI-распознавания (${err.status ?? "error"}).`, "provider_error");
+      throw new IdentificationError("Ошибка AI-распознавания.", "provider_error");
     }
-    if (response.stop_reason === "refusal") throw new IdentificationError("The AI declined to analyse this image.", "refused");
+    if (response.stop_reason === "refusal") throw new IdentificationError("AI отказался анализировать это изображение.", "refused");
     const parsed = response.parsed_output;
-    if (!parsed) throw new IdentificationError("The AI returned an unreadable answer.", "invalid_output");
+    if (!parsed) throw new IdentificationError("AI вернул нечитаемый ответ.", "invalid_output");
     return finalizeIdentification(parsed, "claude");
   }
 }
@@ -77,13 +78,13 @@ export function finalizeIdentification(parsed: import("./types").IdentificationO
   // If the catalog knows variants and the model didn't ask, ask for the variant.
   if (match?.product.variants?.length && !match.variant && !clarifications.some((c) => c.key === "variant" || c.key === "storage")) {
     clarifications = [
-      { key: "variant", question: variantQuestion(match.product.category), options: [...match.product.variants.map((v) => v.name), "Not sure"] },
+      { key: "variant", question: variantQuestion(match.product.category), options: [...match.product.variants.map((v) => v.name), "Не уверен"] },
       ...clarifications,
     ];
   }
   const manufacturer = match?.product.manufacturer ?? parsed.manufacturer;
   const model = match && match.score >= 0.85 ? match.product.model : parsed.model;
-  const name = [manufacturer, model].filter(Boolean).join(" ") || "Unidentified item";
+  const name = [manufacturer, model].filter(Boolean).join(" ") || "Неизвестный предмет";
   return {
     ...parsed,
     category,
@@ -102,18 +103,18 @@ export function variantQuestion(category: string): string {
   switch (category) {
     case "smartphone":
     case "tablet":
-      return "Storage capacity?";
+      return "Объём памяти?";
     case "laptop":
-      return "Memory / storage configuration?";
+      return "Конфигурация ОЗУ / накопителя?";
     case "smartwatch":
-      return "Case size and connectivity?";
+      return "Размер корпуса и связь?";
     case "camera":
     case "drone":
-      return "Which kit?";
+      return "Какой комплект?";
     case "gaming_console":
-      return "Which edition?";
+      return "Какое издание?";
     default:
-      return "Which variant?";
+      return "Какой вариант?";
   }
 }
 

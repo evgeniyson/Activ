@@ -22,14 +22,21 @@ export function Badge({ children, tone = "outline", className }: { children: Rea
 }
 
 export function ConfidenceBadge({ score, kind, className }: { score: number | null | undefined; kind?: "valuation" | "identification"; className?: string }) {
-  if (score == null) return <Badge tone="gray" className={className}>No data</Badge>;
+  if (score == null)
+    return (
+      <Badge tone="gray" className={className}>
+        Нет данных
+      </Badge>
+    );
   const label = confidenceLabel(score);
   const pct = Math.round(score * 100);
+  const bars = label === "Высокая" ? 3 : label === "Средняя" ? 2 : 1;
+  const kindLabel = kind === "identification" ? "Уверенность распознавания" : "Уверенность оценки";
   return (
-    <Badge tone={label === "High" ? "ink" : label === "Medium" ? "outline" : "gray"} className={className} aria-label={`${kind ?? "Confidence"} ${pct}%`}>
+    <Badge tone={bars === 3 ? "ink" : bars === 2 ? "outline" : "gray"} className={className} aria-label={`${kindLabel} ${pct}%`}>
       <span className="inline-flex gap-px" aria-hidden="true">
         {[0, 1, 2].map((i) => (
-          <span key={i} className={cn("h-2 w-1", i < (label === "High" ? 3 : label === "Medium" ? 2 : 1) ? "bg-current" : "bg-current/25")} />
+          <span key={i} className={cn("h-2 w-1", i < bars ? "bg-current" : "bg-current/25")} />
         ))}
       </span>
       {label} · {pct}%

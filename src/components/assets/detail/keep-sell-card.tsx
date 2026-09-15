@@ -8,16 +8,17 @@ export function KeepSellCard({ recommendation, currency, sold }: { recommendatio
   const r = recommendation;
   const tone = r.verdict === "strong_sell" ? "orange" : r.verdict === "consider_selling" ? "ink" : "paper";
   if (sold) return null;
+  const muted = tone === "paper" ? "text-gray" : tone === "ink" ? "text-paper/60" : "text-ink/70";
   return (
     <Panel tone={tone} className="p-5 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <span className={cn("label-mono", tone === "paper" ? "text-gray" : tone === "ink" ? "text-paper/60" : "text-ink/70")}>Should I sell?</span>
+          <span className={cn("label-mono", muted)}>Стоит ли продавать?</span>
           <h3 className="mt-1 text-2xl font-extrabold display-tight sm:text-3xl">{r.title}</h3>
         </div>
         {r.expectedSale != null ? (
           <div className="text-right">
-            <span className={cn("label-mono", tone === "paper" ? "text-gray" : tone === "ink" ? "text-paper/60" : "text-ink/70")}>Estimated sale value</span>
+            <span className={cn("label-mono", muted)}>Ожидаемая цена продажи</span>
             <p className="tnum text-2xl font-extrabold">{formatMoney(r.expectedSale, currency)}</p>
           </div>
         ) : null}
@@ -35,9 +36,9 @@ export function KeepSellCard({ recommendation, currency, sold }: { recommendatio
       ) : null}
       <div className={cn("mt-5 flex items-center gap-3", tone === "ink" ? "text-paper/40" : tone === "orange" ? "text-ink/50" : "text-gray-2")}>
         <SignalBar score={r.score} tone={tone} />
-        <span className="label-mono">Sell signal</span>
+        <span className="label-mono">Сигнал к продаже</span>
       </div>
-      <p className={cn("mt-3 text-[11px]", tone === "ink" ? "text-paper/40" : tone === "orange" ? "text-ink/50" : "text-gray-2")}>This is a probabilistic read on market signals, not financial advice. Prices may move either way.</p>
+      <p className={cn("mt-3 text-[11px]", tone === "ink" ? "text-paper/40" : tone === "orange" ? "text-ink/50" : "text-gray-2")}>Это вероятностная оценка рыночных сигналов, а не финансовая рекомендация. Цены могут двигаться в любую сторону.</p>
     </Panel>
   );
 }

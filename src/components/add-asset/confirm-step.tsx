@@ -8,7 +8,7 @@ import { Field, Input } from "@/components/ui/field";
 import { Check, PenLine } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 import type { IdentificationResult } from "@/services/identification/types";
-import { categoryLabel } from "@/types/categories";
+import { categoryLabel, specLabel } from "@/types/categories";
 import { CATALOG, matchCatalog, searchCatalog, type CatalogProduct } from "@/valuation/catalog";
 
 type Setter = React.Dispatch<React.SetStateAction<AssetFormValues>>;
@@ -48,7 +48,7 @@ export function ConfirmStep({
 
   const answer = (key: string, option: string) => {
     setAnswers((a) => ({ ...a, [key]: option }));
-    if (option === "Not sure") return;
+    if (option === "Не уверен" || option === "Not sure") return;
     if (key === "variant" || key === "storage") {
       set("variant", option);
       // Re-match the catalog with the chosen variant so the valuation uses the right launch price.
@@ -88,8 +88,8 @@ export function ConfirmStep({
 
   return (
     <div>
-      <span className="label-mono text-gray">{identification ? "AI result" : "Details"}</span>
-      <h1 className="mt-2 text-3xl font-extrabold display-tight sm:text-4xl">{identification ? "Is this right?" : "Tell us what it is."}</h1>
+      <span className="label-mono text-gray">{identification ? "Результат AI" : "Данные"}</span>
+      <h1 className="mt-2 text-3xl font-extrabold display-tight sm:text-4xl">{identification ? "Всё верно?" : "Расскажите, что это."}</h1>
 
       {identification ? (
         <div className="mt-6 grid gap-4 sm:grid-cols-[112px_1fr]">
@@ -103,21 +103,21 @@ export function ConfirmStep({
             <div className="flex flex-wrap items-center gap-2">
               <Badge tone="gray">{categoryLabel(form.category)}</Badge>
               <ConfidenceBadge score={identification.confidence} kind="identification" />
-              {identification.provider === "mock" ? <Badge tone="outline">Demo</Badge> : null}
+              {identification.provider === "mock" ? <Badge tone="outline">Демо</Badge> : null}
             </div>
             <p className="mt-2 text-[13px] text-gray">{form.manufacturer}</p>
             <p className="text-2xl font-extrabold display-tight">{form.model || form.name}</p>
             <p className="mt-1 text-[13px] text-gray">
-              {[form.variant, ...Object.entries(specs).filter(([k]) => k !== "storage" || !form.variant).map(([k, v]) => `${k.replace(/_/g, " ")}: ${v}`)].filter(Boolean).join(" · ") || "No visible specs"}
+              {[form.variant, ...Object.entries(specs).filter(([k]) => k !== "storage" || !form.variant).map(([k, v]) => `${specLabel(k)}: ${v}`)].filter(Boolean).join(" · ") || "Характеристики не видны"}
             </p>
             {identification.notes ? <p className="mt-2 text-[12px] text-gray-2">{identification.notes}</p> : null}
-            {identification.imageQuality === "poor" ? <p className="mt-2 text-[12px] font-medium text-orange-3">The photo is a bit unclear — double-check the result.</p> : null}
+            {identification.imageQuality === "poor" ? <p className="mt-2 text-[12px] font-medium text-orange-3">Фото не очень чёткое — перепроверьте результат.</p> : null}
             <div className="mt-3 flex flex-wrap gap-2">
               <button type="button" onClick={() => setEditing((e) => !e)} className="label-mono-md inline-flex items-center gap-1 border-b border-ink pb-0.5 hover:text-orange">
-                <PenLine className="h-3 w-3" aria-hidden="true" /> {editing ? "Hide manual edit" : "Edit manually"}
+                <PenLine className="h-3 w-3" aria-hidden="true" /> {editing ? "Скрыть ручное редактирование" : "Изменить вручную"}
               </button>
               <button type="button" onClick={onRetake} className="label-mono-md border-b border-hair-strong pb-0.5 text-gray hover:text-ink">
-                Retake photo
+                Переснять
               </button>
             </div>
           </div>
@@ -126,7 +126,7 @@ export function ConfirmStep({
 
       {identification?.alternatives.length && identification.confidence < 0.9 ? (
         <div className="mt-5">
-          <span className="label-mono text-gray">Not quite? Could also be</span>
+          <span className="label-mono text-gray">Не то? Возможно, это</span>
           <div className="mt-2 flex flex-wrap gap-2">
             {identification.alternatives.map((alt) => (
               <Chip key={`${alt.manufacturer}-${alt.model}`} onClick={() => pickAlternative(alt)}>
@@ -161,9 +161,9 @@ export function ConfirmStep({
           <IdentityFields v={form} set={set} />
           {catalogId ? (
             <p className="label-mono text-gray-2">
-              Matched to catalog · {CATALOG.find((p) => p.id === catalogId)?.model}{" "}
+              Найдено в каталоге · {CATALOG.find((p) => p.id === catalogId)?.model}{" "}
               <button type="button" className="text-orange" onClick={() => setCatalogId(null)}>
-                unlink
+                отвязать
               </button>
             </p>
           ) : (
@@ -173,7 +173,7 @@ export function ConfirmStep({
       ) : null}
 
       <Button size="lg" className="mt-8 w-full" variant="accent" disabled={!canContinue} onClick={onNext}>
-        {unanswered.length && !editing ? `Answer ${unanswered.length} question${unanswered.length > 1 ? "s" : ""} to continue` : "Looks right →"}
+        {unanswered.length && !editing ? `Ответьте на ${unanswered.length === 1 ? "вопрос" : "вопросы"}, чтобы продолжить` : "Всё верно →"}
       </Button>
     </div>
   );
@@ -197,7 +197,7 @@ function CatalogSearch({ onPick }: { onPick: (p: CatalogProduct) => void }) {
   const [q, setQ] = useState("");
   const results = useMemo(() => (q.trim().length >= 2 ? searchCatalog(q, 6) : []), [q]);
   return (
-    <Field label="Find in catalog" htmlFor="catalog-search" hint="better valuation accuracy">
+    <Field label="Найти в каталоге" htmlFor="catalog-search" hint="точнее оценка">
       <Input id="catalog-search" placeholder="iphone 16 pro, a7 iv, rtx 4080…" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" />
       {results.length ? (
         <ul className="border border-hair bg-paper">
@@ -229,10 +229,10 @@ function CatalogSearch({ onPick }: { onPick: (p: CatalogProduct) => void }) {
 
 function UnmatchedHint({ model, manufacturer, onPick }: { model: string; manufacturer: string; onPick: (p: CatalogProduct) => void }) {
   const m = useMemo(() => (model.trim().length >= 3 ? matchCatalog({ manufacturer, model }) : null), [model, manufacturer]);
-  if (!m) return model.trim().length >= 3 ? <p className="label-mono text-gray-2">Not in our catalog yet — we&apos;ll estimate from your purchase price.</p> : null;
+  if (!m) return model.trim().length >= 3 ? <p className="label-mono text-gray-2">Пока нет в каталоге — оценим по цене покупки.</p> : null;
   return (
     <p className="label-mono text-gray-2">
-      Did you mean{" "}
+      Вы имели в виду{" "}
       <button type="button" className="text-orange" onClick={() => onPick(m.product)}>
         {m.product.manufacturer} {m.product.model}
       </button>

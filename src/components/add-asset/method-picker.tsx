@@ -6,9 +6,9 @@ import type { AddMethod } from "./add-asset-flow";
 export function MethodPicker({ onChoose, aiEnabled }: { onChoose: (m: AddMethod) => void; aiEnabled: boolean }) {
   return (
     <div>
-      <span className="label-mono text-gray">Add asset</span>
-      <h1 className="mt-2 text-3xl font-extrabold display-tight sm:text-4xl">What are we adding?</h1>
-      <p className="mt-2 text-[15px] text-gray">Point the camera at it. We&apos;ll identify the product and estimate what it&apos;s worth today.</p>
+      <span className="label-mono text-gray">Добавить актив</span>
+      <h1 className="mt-2 text-3xl font-extrabold display-tight sm:text-4xl">Что добавляем?</h1>
+      <p className="mt-2 text-[15px] text-gray">Наведите камеру. Мы распознаем модель и оценим, сколько она стоит сегодня.</p>
 
       <button
         type="button"
@@ -19,16 +19,16 @@ export function MethodPicker({ onChoose, aiEnabled }: { onChoose: (m: AddMethod)
           <Camera className="h-6 w-6" strokeWidth={2} aria-hidden="true" />
         </span>
         <span>
-          <span className="block text-2xl font-extrabold display-tight sm:text-3xl">Scan with Camera</span>
-          <span className="mt-1 block text-[14px] text-ink/75">{aiEnabled ? "AI identification · takes about 5 seconds" : "Demo identification · connect an AI key for real recognition"}</span>
+          <span className="block text-2xl font-extrabold display-tight sm:text-3xl">Сканировать камерой</span>
+          <span className="mt-1 block text-[14px] text-ink/75">{aiEnabled ? "AI-распознавание · около 5 секунд" : "Демо-распознавание · подключите AI-ключ для реального распознавания"}</span>
         </span>
         <span className="label-mono absolute right-6 top-6 text-ink/60 group-hover:text-ink">→</span>
       </button>
 
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
-        <MethodCard icon={Upload} title="Upload Photo" desc="From your library" onClick={() => onChoose("upload")} />
-        <MethodCard icon={PenLine} title="Add Manually" desc="Type the model" onClick={() => onChoose("manual")} />
-        <MethodCard icon={Barcode} title="Scan Barcode" desc="EAN / UPC on the box" onClick={() => onChoose("barcode")} />
+        <MethodCard icon={Upload} title="Загрузить фото" desc="Из галереи" onClick={() => onChoose("upload")} />
+        <MethodCard icon={PenLine} title="Добавить вручную" desc="Ввести модель" onClick={() => onChoose("manual")} />
+        <MethodCard icon={Barcode} title="Штрих-код" desc="EAN / UPC на коробке" onClick={() => onChoose("barcode")} />
       </div>
     </div>
   );

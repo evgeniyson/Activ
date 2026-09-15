@@ -10,25 +10,25 @@ export function DangerZone() {
   const [open, setOpen] = useState(false);
   return (
     <Panel>
-      <PanelHeader index="!" title="Data" />
+      <PanelHeader index="!" title="Данные" />
       <div className="flex flex-col gap-3 p-5">
         <form action={loadDemoPortfolioAction}>
           <Button type="submit" variant="outline" className="w-full">
-            Load demo portfolio
+            Загрузить демо-портфель
           </Button>
         </form>
         <Button variant="ghost" className="w-full text-orange-3 hover:bg-orange-3/10" onClick={() => setOpen(true)}>
-          Delete all my data
+          Удалить все мои данные
         </Button>
       </div>
-      <Sheet open={open} onClose={() => setOpen(false)} title="Delete everything?" description="All assets, photos, expenses, history and notifications will be removed permanently.">
+      <Sheet open={open} onClose={() => setOpen(false)} title="Удалить всё?" description="Все активы, фото, расходы, история и уведомления будут удалены безвозвратно.">
         <div className="flex gap-3">
           <Button variant="outline" className="flex-1" onClick={() => setOpen(false)}>
-            Cancel
+            Отмена
           </Button>
           <form action={deleteAllDataAction} className="flex-1">
             <Button type="submit" variant="danger" className="w-full">
-              Delete all data
+              Удалить все данные
             </Button>
           </form>
         </div>

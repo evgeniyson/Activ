@@ -1,6 +1,8 @@
 # АКТИВ — Personal Asset OS
 
-> Understand what owning your stuff actually costs you.
+> Поймите, во сколько вам на самом деле обходятся ваши вещи.
+
+Интерфейс полностью на русском языке; валюта по умолчанию — рубли (RUB), рынок — Россия. Валюта и регион меняются в настройках профиля; каталог хранит цены в EUR и конвертирует через `FxProvider` (`src/lib/currency.ts`).
 
 A financial portfolio for physical things: track what you paid, what each item is worth today, how fast it depreciates, what owning it costs per day, and whether it's a good time to sell.
 

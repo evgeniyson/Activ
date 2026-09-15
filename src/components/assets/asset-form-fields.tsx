@@ -42,11 +42,11 @@ export const emptyAssetForm = (currency: CurrencyCode): AssetFormValues => ({
 
 export function ConditionPicker({ value, onChange }: { value: Condition; onChange: (c: Condition) => void }) {
   return (
-    <div role="radiogroup" aria-label="Condition" className="grid grid-cols-5 gap-px border border-ink bg-ink">
+    <div role="radiogroup" aria-label="Состояние" className="grid grid-cols-5 gap-px border border-ink bg-ink">
       {CONDITIONS.map((c) => {
         const active = c === value;
         return (
-          <button key={c} type="button" role="radio" aria-checked={active} onClick={() => onChange(c)} className={`h-11 px-1 text-[12px] font-semibold transition-colors duration-[140ms] sm:text-[13px] ${active ? "bg-ink text-paper" : "bg-paper text-gray hover:text-ink"}`}>
+          <button key={c} type="button" role="radio" aria-checked={active} onClick={() => onChange(c)} className={`h-11 px-1 text-[11px] font-semibold transition-colors duration-[140ms] sm:text-[13px] ${active ? "bg-ink text-paper" : "bg-paper text-gray hover:text-ink"}`}>
             {CONDITION_LABELS[c]}
           </button>
         );
@@ -58,19 +58,19 @@ export function ConditionPicker({ value, onChange }: { value: Condition; onChang
 export function IdentityFields({ v, set, errors }: { v: AssetFormValues; set: <K extends keyof AssetFormValues>(k: K, val: AssetFormValues[K]) => void; errors?: Record<string, string> }) {
   return (
     <>
-      <Field label="Name" htmlFor="af-name" error={errors?.name}>
+      <Field label="Название" htmlFor="af-name" error={errors?.name}>
         <Input id="af-name" required value={v.name} onChange={(e) => set("name", e.target.value)} placeholder="iPhone 17 Pro" />
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Manufacturer" htmlFor="af-manufacturer">
+        <Field label="Производитель" htmlFor="af-manufacturer">
           <Input id="af-manufacturer" value={v.manufacturer} onChange={(e) => set("manufacturer", e.target.value)} placeholder="Apple" />
         </Field>
-        <Field label="Model" htmlFor="af-model">
+        <Field label="Модель" htmlFor="af-model">
           <Input id="af-model" value={v.model} onChange={(e) => set("model", e.target.value)} placeholder="iPhone 17 Pro" />
         </Field>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Category" htmlFor="af-category">
+        <Field label="Категория" htmlFor="af-category">
           <Select id="af-category" value={v.category} onChange={(e) => set("category", e.target.value as AssetCategory)}>
             {Object.entries(CATEGORY_GROUPS).map(([group, label]) => (
               <optgroup key={group} label={label}>
@@ -83,7 +83,7 @@ export function IdentityFields({ v, set, errors }: { v: AssetFormValues; set: <K
             ))}
           </Select>
         </Field>
-        <Field label="Variant" htmlFor="af-variant" hint="storage, size, kit">
+        <Field label="Вариант" htmlFor="af-variant" hint="память, размер, комплект">
           <Input id="af-variant" value={v.variant} onChange={(e) => set("variant", e.target.value)} placeholder="256 GB" />
         </Field>
       </div>
@@ -95,11 +95,11 @@ export function PurchaseFields({ v, set, errors }: { v: AssetFormValues; set: <K
   return (
     <>
       <div className="grid grid-cols-[1fr_auto] gap-3">
-        <Field label="Purchase price" htmlFor="af-price" error={errors?.purchasePrice}>
-          <InputWithPrefix id="af-price" prefix={CURRENCIES[v.purchaseCurrency].symbol} inputMode="decimal" required value={v.purchasePrice} onChange={(e) => set("purchasePrice", e.target.value)} placeholder="1,299" invalid={Boolean(errors?.purchasePrice)} />
+        <Field label="Цена покупки" htmlFor="af-price" error={errors?.purchasePrice}>
+          <InputWithPrefix id="af-price" prefix={CURRENCIES[v.purchaseCurrency].symbol} inputMode="decimal" required value={v.purchasePrice} onChange={(e) => set("purchasePrice", e.target.value)} placeholder="139 990" invalid={Boolean(errors?.purchasePrice)} />
         </Field>
-        <Field label="Currency">
-          <Select aria-label="Purchase currency" value={v.purchaseCurrency} onChange={(e) => set("purchaseCurrency", e.target.value as CurrencyCode)} className="w-24">
+        <Field label="Валюта">
+          <Select aria-label="Валюта покупки" value={v.purchaseCurrency} onChange={(e) => set("purchaseCurrency", e.target.value as CurrencyCode)} className="w-24">
             {CURRENCY_CODES.map((c) => (
               <option key={c} value={c}>
                 {c}
@@ -108,10 +108,10 @@ export function PurchaseFields({ v, set, errors }: { v: AssetFormValues; set: <K
           </Select>
         </Field>
       </div>
-      <Field label="Purchase date" htmlFor="af-date" error={errors?.purchaseDate}>
+      <Field label="Дата покупки" htmlFor="af-date" error={errors?.purchaseDate}>
         <Input id="af-date" type="date" required value={v.purchaseDate} max={toISODate(new Date())} onChange={(e) => set("purchaseDate", e.target.value)} />
       </Field>
-      <Field label="Condition">
+      <Field label="Состояние">
         <ConditionPicker value={v.condition} onChange={(c) => set("condition", c)} />
       </Field>
     </>
@@ -122,23 +122,23 @@ export function OptionalFields({ v, set }: { v: AssetFormValues; set: <K extends
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Retailer" htmlFor="af-retailer">
-          <Input id="af-retailer" value={v.retailer} onChange={(e) => set("retailer", e.target.value)} placeholder="Apple Store" />
+        <Field label="Магазин" htmlFor="af-retailer">
+          <Input id="af-retailer" value={v.retailer} onChange={(e) => set("retailer", e.target.value)} placeholder="re:Store" />
         </Field>
-        <Field label="Warranty until" htmlFor="af-warranty">
+        <Field label="Гарантия до" htmlFor="af-warranty">
           <Input id="af-warranty" type="date" value={v.warrantyExpiration} onChange={(e) => set("warrantyExpiration", e.target.value)} />
         </Field>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Serial number" htmlFor="af-serial">
+        <Field label="Серийный номер" htmlFor="af-serial">
           <Input id="af-serial" className="font-mono text-sm" value={v.serialNumber} onChange={(e) => set("serialNumber", e.target.value)} />
         </Field>
         <Field label="IMEI" htmlFor="af-imei">
           <Input id="af-imei" className="font-mono text-sm" inputMode="numeric" value={v.imei} onChange={(e) => set("imei", e.target.value)} />
         </Field>
       </div>
-      <Field label="Notes" htmlFor="af-notes">
-        <Textarea id="af-notes" value={v.notes} onChange={(e) => set("notes", e.target.value)} placeholder="Accessories included, known issues…" />
+      <Field label="Заметки" htmlFor="af-notes">
+        <Textarea id="af-notes" value={v.notes} onChange={(e) => set("notes", e.target.value)} placeholder="Комплектация, известные проблемы…" />
       </Field>
     </>
   );

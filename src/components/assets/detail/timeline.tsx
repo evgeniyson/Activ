@@ -18,7 +18,7 @@ const DOT: Record<TimelineItem["kind"], string> = {
 
 export function Timeline({ items, limit = 14 }: { items: TimelineItem[]; limit?: number }) {
   const shown = items.slice(0, limit);
-  if (!shown.length) return <p className="px-5 py-6 text-sm text-gray">Nothing here yet.</p>;
+  if (!shown.length) return <p className="px-5 py-6 text-sm text-gray">Пока пусто.</p>;
   return (
     <ol className="relative px-5 py-4">
       <div className="absolute bottom-6 left-[27px] top-6 w-px bg-hair" aria-hidden="true" />
@@ -40,7 +40,7 @@ export function Timeline({ items, limit = 14 }: { items: TimelineItem[]; limit?:
           </div>
         </li>
       ))}
-      {items.length > limit ? <li className="label-mono pl-6 pt-4 text-gray-2">+{items.length - limit} earlier</li> : null}
+      {items.length > limit ? <li className="label-mono pl-6 pt-4 text-gray-2">ещё {items.length - limit} ранее</li> : null}
     </ol>
   );
 }

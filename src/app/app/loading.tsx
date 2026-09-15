@@ -2,7 +2,7 @@ import { AssetRowSkeleton, ChartSkeleton, Skeleton, StatSkeleton } from "@/compo
 
 export default function Loading() {
   return (
-    <div aria-busy="true" aria-label="Loading">
+    <div aria-busy="true" aria-label="Загрузка">
       <div className="mb-8 flex flex-col gap-3">
         <Skeleton className="h-9 w-56" />
         <Skeleton className="h-3.5 w-72" />

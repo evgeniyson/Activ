@@ -13,6 +13,7 @@ import type { Asset } from "@/types/domain";
 import { IdentityFields, OptionalFields, PurchaseFields, formToPayload, type AssetFormValues } from "../asset-form-fields";
 
 type SheetKind = null | "edit" | "value" | "sold" | "delete";
+const num = (s: string) => s.replace(/\s/g, "").replace(",", ".");
 
 export function AssetActions({ asset, currency }: { asset: Asset; currency: CurrencyCode }) {
   const [sheet, setSheet] = useState<SheetKind>(null);
@@ -23,21 +24,21 @@ export function AssetActions({ asset, currency }: { asset: Asset; currency: Curr
   const refresh = () =>
     start(async () => {
       const res = await refreshValuationAction(asset.id);
-      toast.push(res.ok ? "Valuation refreshed." : res.error, res.ok ? "success" : "error");
+      toast.push(res.ok ? "Оценка обновлена." : res.error, res.ok ? "success" : "error");
     });
 
   return (
     <div className="flex flex-wrap items-center justify-end gap-1.5">
       {asset.status === "active" ? (
         <>
-          <Button size="sm" variant="ghost" onClick={refresh} loading={pending} aria-label="Refresh valuation">
-            <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" /> <span className="hidden sm:inline">Refresh</span>
+          <Button size="sm" variant="ghost" onClick={refresh} loading={pending} aria-label="Обновить оценку">
+            <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" /> <span className="hidden sm:inline">Обновить</span>
           </Button>
           <Button size="sm" variant="ghost" onClick={() => setSheet("value")}>
-            <Tag className="h-3.5 w-3.5" aria-hidden="true" /> <span className="hidden sm:inline">Set value</span>
+            <Tag className="h-3.5 w-3.5" aria-hidden="true" /> <span className="hidden sm:inline">Задать стоимость</span>
           </Button>
           <Button size="sm" variant="ghost" onClick={() => setSheet("sold")}>
-            Mark sold
+            Продано
           </Button>
         </>
       ) : (
@@ -48,27 +49,27 @@ export function AssetActions({ asset, currency }: { asset: Asset; currency: Curr
           onClick={() =>
             start(async () => {
               const res = await restoreAssetAction(asset.id);
-              toast.push(res.ok ? "Asset restored to your portfolio." : res.error, res.ok ? "success" : "error");
+              toast.push(res.ok ? "Актив возвращён в портфель." : res.error, res.ok ? "success" : "error");
             })
           }
         >
-          Restore
+          Вернуть
         </Button>
       )}
       <Button size="sm" variant="outline" onClick={() => setSheet("edit")}>
-        <PenLine className="h-3.5 w-3.5" aria-hidden="true" /> Edit
+        <PenLine className="h-3.5 w-3.5" aria-hidden="true" /> Изменить
       </Button>
-      <Button size="sm" variant="ghost" onClick={() => setSheet("delete")} aria-label="Delete asset" className="text-gray hover:text-orange-3">
+      <Button size="sm" variant="ghost" onClick={() => setSheet("delete")} aria-label="Удалить актив" className="text-gray hover:text-orange-3">
         <Trash2 className="h-4 w-4" aria-hidden="true" />
       </Button>
 
       <EditSheet open={sheet === "edit"} onClose={close} asset={asset} />
       <ManualValueSheet open={sheet === "value"} onClose={close} asset={asset} currency={currency} />
       <SoldSheet open={sheet === "sold"} onClose={close} asset={asset} />
-      <Sheet open={sheet === "delete"} onClose={close} title="Delete this asset?" description="This removes the item, its photos, expenses and price history. It can't be undone.">
+      <Sheet open={sheet === "delete"} onClose={close} title="Удалить актив?" description="Будут удалены предмет, его фото, расходы и история цены. Отменить нельзя.">
         <div className="flex gap-3">
           <Button variant="outline" className="flex-1" onClick={close}>
-            Keep it
+            Оставить
           </Button>
           <Button
             variant="danger"
@@ -81,7 +82,7 @@ export function AssetActions({ asset, currency }: { asset: Asset; currency: Curr
               })
             }
           >
-            Delete
+            Удалить
           </Button>
         </div>
       </Sheet>
@@ -112,7 +113,7 @@ function EditSheet({ open, onClose, asset }: { open: boolean; onClose: () => voi
   const toast = useToast();
 
   return (
-    <Sheet open={open} onClose={onClose} title="Edit asset" description="Changing the model or condition re-runs the valuation." className="sm:max-w-2xl">
+    <Sheet open={open} onClose={onClose} title="Изменить актив" description="Изменение модели или состояния запускает переоценку." className="sm:max-w-2xl">
       <form
         className="flex flex-col gap-4"
         onSubmit={(e) => {
@@ -124,7 +125,7 @@ function EditSheet({ open, onClose, asset }: { open: boolean; onClose: () => voi
               setError(res.error);
               return;
             }
-            toast.push("Saved.", "success");
+            toast.push("Сохранено.", "success");
             onClose();
           });
         }}
@@ -134,7 +135,7 @@ function EditSheet({ open, onClose, asset }: { open: boolean; onClose: () => voi
         <OptionalFields v={v} set={set} />
         {error ? <p className="text-sm font-medium text-orange-3">{error}</p> : null}
         <Button type="submit" size="lg" loading={pending}>
-          Save changes
+          Сохранить
         </Button>
       </form>
     </Sheet>
@@ -148,27 +149,27 @@ function ManualValueSheet({ open, onClose, asset, currency }: { open: boolean; o
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
   return (
-    <Sheet open={open} onClose={onClose} title="Set value manually" description="Got an offer or an appraisal? Use it instead of the estimate. Recorded in the price history.">
+    <Sheet open={open} onClose={onClose} title="Задать стоимость вручную" description="Есть предложение покупателя или оценка сервиса? Используйте её вместо расчёта. Запишется в историю цены.">
       <form
         className="flex flex-col gap-4"
         onSubmit={(e) => {
           e.preventDefault();
           start(async () => {
-            const res = await setManualValueAction({ assetId: asset.id, value, currency: cur });
+            const res = await setManualValueAction({ assetId: asset.id, value: num(value), currency: cur });
             if (!res.ok) {
               setError(res.error);
               return;
             }
-            toast.push("Value updated.", "success");
+            toast.push("Стоимость обновлена.", "success");
             onClose();
           });
         }}
       >
         <div className="grid grid-cols-[1fr_auto] gap-3">
-          <Field label="Current value" htmlFor="mv-value">
-            <InputWithPrefix id="mv-value" prefix={CURRENCIES[cur].symbol} inputMode="decimal" required autoFocus value={value} onChange={(e) => setValue(e.target.value)} placeholder="930" />
+          <Field label="Текущая стоимость" htmlFor="mv-value">
+            <InputWithPrefix id="mv-value" prefix={CURRENCIES[cur].symbol} inputMode="decimal" required autoFocus value={value} onChange={(e) => setValue(e.target.value)} placeholder="96 000" />
           </Field>
-          <Field label="Currency">
+          <Field label="Валюта">
             <Select value={cur} onChange={(e) => setCur(e.target.value as CurrencyCode)} className="w-24">
               {CURRENCY_CODES.map((c) => (
                 <option key={c} value={c}>
@@ -180,7 +181,7 @@ function ManualValueSheet({ open, onClose, asset, currency }: { open: boolean; o
         </div>
         {error ? <p className="text-sm font-medium text-orange-3">{error}</p> : null}
         <Button type="submit" size="lg" loading={pending}>
-          Save value
+          Сохранить стоимость
         </Button>
       </form>
     </Sheet>
@@ -194,31 +195,31 @@ function SoldSheet({ open, onClose, asset }: { open: boolean; onClose: () => voi
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
   return (
-    <Sheet open={open} onClose={onClose} title="Mark as sold" description="The item moves out of your portfolio; its final depreciation is recorded.">
+    <Sheet open={open} onClose={onClose} title="Отметить как проданный" description="Предмет уйдёт из портфеля; итоговое обесценивание сохранится в истории.">
       <form
         className="flex flex-col gap-4"
         onSubmit={(e) => {
           e.preventDefault();
           start(async () => {
-            const res = await markSoldAction({ assetId: asset.id, soldPrice: price, soldDate: date });
+            const res = await markSoldAction({ assetId: asset.id, soldPrice: num(price), soldDate: date });
             if (!res.ok) {
               setError(res.error);
               return;
             }
-            toast.push("Marked as sold.", "success");
+            toast.push("Отмечено как проданное.", "success");
             onClose();
           });
         }}
       >
-        <Field label={`Sale price (${asset.purchaseCurrency})`} htmlFor="sold-price">
+        <Field label={`Цена продажи (${asset.purchaseCurrency})`} htmlFor="sold-price">
           <InputWithPrefix id="sold-price" prefix={CURRENCIES[asset.purchaseCurrency].symbol} inputMode="decimal" required value={price} onChange={(e) => setPrice(e.target.value)} />
         </Field>
-        <Field label="Sale date" htmlFor="sold-date">
+        <Field label="Дата продажи" htmlFor="sold-date">
           <Input id="sold-date" type="date" required value={date} max={toISODate(new Date())} onChange={(e) => setDate(e.target.value)} />
         </Field>
         {error ? <p className="text-sm font-medium text-orange-3">{error}</p> : null}
         <Button type="submit" size="lg" loading={pending}>
-          Confirm sale
+          Подтвердить продажу
         </Button>
       </form>
     </Sheet>

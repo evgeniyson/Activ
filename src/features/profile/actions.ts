@@ -24,7 +24,7 @@ const profileSchema = z.object({
 export async function updateProfileAction(raw: unknown): Promise<ActionResult> {
   const user = await requireUser();
   const parsed = profileSchema.safeParse(raw);
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Некорректные данные." };
   const store = await getStore();
   await ensureProfile(store, user);
   const d = parsed.data;

@@ -29,9 +29,9 @@ export function identifyByBarcode(code: string): IdentificationResult | null {
       specs: Object.entries(p.specs ?? {}).map(([key, value]) => ({ key, value })),
       color: null,
       confidence: 0.98,
-      clarifications: p.variants?.length ? [{ key: "variant", question: variantQuestion(p.category), options: [...p.variants.map((v) => v.name), "Not sure"] }] : [],
+      clarifications: p.variants?.length ? [{ key: "variant", question: variantQuestion(p.category), options: [...p.variants.map((v) => v.name), "Не уверен"] }] : [],
       alternatives: [],
-      notes: "Matched by barcode.",
+      notes: "Найдено по штрих-коду.",
     },
     "barcode",
   );

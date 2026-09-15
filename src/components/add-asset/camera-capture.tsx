@@ -44,7 +44,7 @@ export function CameraCapture({ mode, onCapture }: { mode: "camera" | "upload"; 
         }
         setLive(true);
       } catch {
-        setError("Camera access was blocked. You can still take a photo with the button below.");
+        setError("Доступ к камере заблокирован. Сделать фото всё равно можно кнопкой ниже.");
       } finally {
         if (!cancelled) setStarting(false);
       }
@@ -78,7 +78,7 @@ export function CameraCapture({ mode, onCapture }: { mode: "camera" | "upload"; 
     const f = e.target.files?.[0];
     if (!f) return;
     if (!f.type.startsWith("image/")) {
-      setError("Please choose an image file.");
+      setError("Выберите файл изображения.");
       return;
     }
     stop();
@@ -87,20 +87,20 @@ export function CameraCapture({ mode, onCapture }: { mode: "camera" | "upload"; 
 
   return (
     <div>
-      <span className="label-mono text-gray">{mode === "camera" ? "Scan" : "Upload"}</span>
-      <h1 className="mt-2 text-3xl font-extrabold display-tight sm:text-4xl">{mode === "camera" ? "Frame the item." : "Pick a photo."}</h1>
-      <p className="mt-2 text-[15px] text-gray">Good light, the whole product in frame, logos and ports visible if you can.</p>
+      <span className="label-mono text-gray">{mode === "camera" ? "Сканирование" : "Загрузка"}</span>
+      <h1 className="mt-2 text-3xl font-extrabold display-tight sm:text-4xl">{mode === "camera" ? "Поймайте предмет в кадр." : "Выберите фото."}</h1>
+      <p className="mt-2 text-[15px] text-gray">Хороший свет, весь предмет в кадре, по возможности видны логотипы и разъёмы.</p>
 
       <div className="relative mt-6 aspect-[4/5] w-full overflow-hidden border border-ink bg-ink sm:aspect-[4/3]">
         <video ref={videoRef} playsInline muted className={`h-full w-full object-cover ${live ? "opacity-100" : "opacity-0"} transition-opacity duration-300`} />
         {!live ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-paper">
             {starting ? (
-              <span className="label-mono text-paper/60">Starting camera…</span>
+              <span className="label-mono text-paper/60">Запускаем камеру…</span>
             ) : (
               <>
                 {mode === "camera" ? <Camera className="h-8 w-8 text-paper/60" strokeWidth={1.5} aria-hidden="true" /> : <Upload className="h-8 w-8 text-paper/60" strokeWidth={1.5} aria-hidden="true" />}
-                <p className="max-w-xs text-sm text-paper/70">{error ?? (mode === "camera" ? "Use your device camera to take a photo." : "JPEG, PNG or HEIC up to 15 MB.")}</p>
+                <p className="max-w-xs text-sm text-paper/70">{error ?? (mode === "camera" ? "Сделайте фото камерой устройства." : "JPEG, PNG или HEIC до 15 МБ.")}</p>
               </>
             )}
           </div>
@@ -114,22 +114,22 @@ export function CameraCapture({ mode, onCapture }: { mode: "camera" | "upload"; 
         </div>
       </div>
 
-      <input ref={inputRef} type="file" accept="image/*" capture={mode === "camera" ? "environment" : undefined} className="sr-only" onChange={onFile} aria-label={mode === "camera" ? "Take a photo" : "Choose a photo"} />
+      <input ref={inputRef} type="file" accept="image/*" capture={mode === "camera" ? "environment" : undefined} className="sr-only" onChange={onFile} aria-label={mode === "camera" ? "Сделать фото" : "Выбрать фото"} />
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         {live ? (
           <Button size="lg" variant="accent" className="flex-1" onClick={shutter}>
-            <Camera className="h-5 w-5" aria-hidden="true" /> Take photo
+            <Camera className="h-5 w-5" aria-hidden="true" /> Сделать фото
           </Button>
         ) : (
           <Button size="lg" variant="accent" className="flex-1" onClick={() => inputRef.current?.click()}>
             {mode === "camera" ? <Camera className="h-5 w-5" aria-hidden="true" /> : <Upload className="h-5 w-5" aria-hidden="true" />}
-            {mode === "camera" ? "Open camera" : "Choose photo"}
+            {mode === "camera" ? "Открыть камеру" : "Выбрать фото"}
           </Button>
         )}
         {live ? (
           <Button size="lg" variant="outline" onClick={() => inputRef.current?.click()}>
-            Upload instead
+            Загрузить файл
           </Button>
         ) : null}
       </div>

@@ -2,9 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "АКТИВ — Personal Asset OS",
+    name: "АКТИВ — сколько стоят ваши вещи",
     short_name: "АКТИВ",
-    description: "Know what your stuff is really worth. Track market value, depreciation and the true cost of everything you own.",
+    description: "Рыночная стоимость, обесценивание и реальная цена владения всем, что у вас есть.",
+    lang: "ru",
     start_url: "/app",
     scope: "/",
     display: "standalone",
@@ -19,8 +20,8 @@ export default function manifest(): MetadataRoute.Manifest {
       { src: "/brand/icon-512-maskable.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
     shortcuts: [
-      { name: "Scan an item", url: "/app/assets/new?method=camera", icons: [{ src: "/brand/icon-192.png", sizes: "192x192" }] },
-      { name: "Assets", url: "/app/assets" },
+      { name: "Отсканировать предмет", url: "/app/assets/new?method=camera", icons: [{ src: "/brand/icon-192.png", sizes: "192x192" }] },
+      { name: "Активы", url: "/app/assets" },
     ],
   };
 }

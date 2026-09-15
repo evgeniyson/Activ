@@ -8,7 +8,7 @@ import type { ProviderEstimate, ValuationProvider, ValuationRequest } from "../t
  */
 export class MockProvider implements ValuationProvider {
   readonly id = "mock" as const;
-  readonly name = "Mock provider";
+  readonly name = "Тестовый провайдер";
   readonly weight = 0.5;
 
   constructor(private readonly retention = 0.7) {}

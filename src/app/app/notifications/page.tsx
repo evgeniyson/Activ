@@ -12,17 +12,17 @@ import { requireUser } from "@/services/auth/session";
 import type { NotificationType } from "@/types/domain";
 import { MarkReadOnView } from "@/components/notifications/mark-read-on-view";
 
-export const metadata: Metadata = { title: "Notifications" };
+export const metadata: Metadata = { title: "Уведомления" };
 export const dynamic = "force-dynamic";
 
 const TYPE_LABEL: Record<NotificationType, string> = {
-  price_changed: "Price",
-  value_dropped: "Value dropped",
-  value_increased: "Value up",
-  good_time_to_sell: "Sell signal",
-  warranty_expiring: "Warranty",
-  monthly_report: "Report",
-  system: "System",
+  price_changed: "Цена",
+  value_dropped: "Подешевело",
+  value_increased: "Подорожало",
+  good_time_to_sell: "Сигнал к продаже",
+  warranty_expiring: "Гарантия",
+  monthly_report: "Отчёт",
+  system: "Система",
 };
 
 export default async function NotificationsPage() {
@@ -35,13 +35,13 @@ export default async function NotificationsPage() {
     <>
       <PageHeader
         index="005"
-        title="Notifications"
-        description="Price moves, sell signals, warranty alerts and monthly reports."
+        title="Уведомления"
+        description="Движение цен, сигналы к продаже, гарантия и ежемесячные отчёты."
         action={
           unread.length ? (
             <form action={markNotificationsReadAction.bind(null, "all")}>
               <Button type="submit" variant="outline" size="sm">
-                Mark all read
+                Прочитать все
               </Button>
             </form>
           ) : null
@@ -80,7 +80,7 @@ export default async function NotificationsPage() {
           </ul>
         </Panel>
       ) : (
-        <EmptyState title="All quiet." description="You'll hear from us when a value moves noticeably, a warranty is about to end, or it looks like a good time to sell." />
+        <EmptyState title="Пока тихо." description="Мы напишем, когда стоимость заметно изменится, будет заканчиваться гарантия или появится удачный момент для продажи." />
       )}
     </>
   );

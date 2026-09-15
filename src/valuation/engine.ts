@@ -133,15 +133,15 @@ function weightOf(source: ProviderEstimate["source"]) {
 function describe(id: ProviderEstimate["source"]): string {
   switch (id) {
     case "internal":
-      return "Deterministic model built on launch prices, product age, condition, region and seasonality.";
+      return "Детерминированная модель: цена на старте продаж, возраст продукта, состояние, регион и сезонность.";
     case "ebay":
-      return "Median of active eBay listings in your marketplace region.";
+      return "Медиана активных объявлений eBay в вашем регионе.";
     case "marketplace":
-      return "Partner marketplace pricing feed.";
+      return "Партнёрский ценовой фид (Авито и др.).";
     case "manual":
-      return "Values you set yourself, e.g. from an offer or appraisal.";
+      return "Значения, которые вы указали сами: по предложению покупателя или оценке.";
     case "mock":
-      return "Deterministic test stub.";
+      return "Детерминированная заглушка для тестов.";
   }
 }
 

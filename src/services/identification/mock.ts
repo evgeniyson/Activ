@@ -24,7 +24,7 @@ export class MockIdentificationProvider implements IdentificationProvider {
     const product = hinted ?? pool[fnv1a(input.image.subarray(0, 4096).toString("base64")) % pool.length];
     const specs = Object.entries(product.specs ?? {}).map(([key, value]) => ({ key, value }));
     const clarifications = product.variants?.length
-      ? [{ key: "variant", question: variantQuestion(product.category), options: [...product.variants.map((v) => v.name), "Not sure"] }]
+      ? [{ key: "variant", question: variantQuestion(product.category), options: [...product.variants.map((v) => v.name), "Не уверен"] }]
       : [];
     const alt = pool.filter((p) => p.category === product.category && p.manufacturer === product.manufacturer && p.id !== product.id).slice(0, 2);
     return finalizeIdentification(
@@ -40,7 +40,7 @@ export class MockIdentificationProvider implements IdentificationProvider {
         confidence: 0.86,
         clarifications,
         alternatives: alt.map((p) => ({ manufacturer: p.manufacturer, model: p.model })),
-        notes: "Demo identification — connect an AI key for real recognition.",
+        notes: "Демо-распознавание — подключите AI-ключ для реального распознавания.",
       },
       "mock",
     );

@@ -18,10 +18,10 @@ import { upgradeOptions } from "@/features/insights/upgrade";
 import { ensureProfile } from "@/features/profile/service";
 import { track } from "@/lib/analytics";
 import { formatDate } from "@/lib/dates";
-import { formatMoney, formatPercent, pluralize } from "@/lib/format";
+import { formatMoney, formatPercent, plural } from "@/lib/format";
 import { getStore } from "@/services/data";
 import { requireUser } from "@/services/auth/session";
-import { categoryLabel } from "@/types/categories";
+import { categoryLabel, specLabel } from "@/types/categories";
 import { CONDITION_LABELS } from "@/types/domain";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const user = await requireUser();
   const store = await getStore();
   const asset = await store.getAsset(user.id, id);
-  return { title: asset?.name ?? "Asset" };
+  return { title: asset?.name ?? "Актив" };
 }
 
 export default async function AssetPage({ params }: { params: Promise<{ id: string }> }) {
@@ -54,62 +54,60 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
     <>
       <div className="mb-5 flex items-center justify-between gap-3">
         <Link href="/app/assets" className="label-mono-md inline-flex items-center gap-1.5 text-gray hover:text-ink">
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Assets
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Активы
         </Link>
         <AssetActions asset={asset} currency={cur} />
       </div>
 
-      {/* Header */}
       <header className="mb-4 flex flex-col gap-5 sm:flex-row sm:items-start">
         <AssetThumb asset={asset} size={96} className="sm:h-28 sm:w-28" />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone="gray">{categoryLabel(asset.category)}</Badge>
-            {sold ? <Badge tone="ink">Sold</Badge> : null}
+            {sold ? <Badge tone="ink">Продано</Badge> : null}
             {asset.identificationConfidence != null ? <ConfidenceBadge score={asset.identificationConfidence} kind="identification" /> : null}
           </div>
           <h1 className="mt-2 text-3xl font-extrabold display-tight sm:text-4xl">{asset.name}</h1>
           <p className="mt-2 text-[15px] text-gray">
             {[asset.manufacturer, asset.variant, ...specEntries.filter(([k]) => k === "color").map(([, v]) => v)].filter(Boolean).join(" · ")}
-            {" · "}Condition: <span className="font-semibold text-ink">{CONDITION_LABELS[asset.condition]}</span>
+            {" · "}Состояние: <span className="font-semibold text-ink">{CONDITION_LABELS[asset.condition]}</span>
           </p>
         </div>
       </header>
 
-      {/* Value hero */}
-      <section className="grid gap-px border border-hair bg-hair md:grid-cols-3" aria-label="Valuation">
+      <section className="grid gap-px border border-hair bg-hair md:grid-cols-3" aria-label="Оценка">
         <div className="bg-ink px-5 py-6 text-paper md:col-span-1 lg:px-6">
-          <span className="label-mono text-paper/60">{sold ? "Sold for" : "Estimated market value"}</span>
+          <span className="label-mono text-paper/60">{sold ? "Продано за" : "Оценочная рыночная стоимость"}</span>
           <div className="mt-2">
             {sold && asset.soldPrice != null ? (
-              <Money amount={asset.soldPrice} currency={asset.purchaseCurrency} className="text-5xl font-extrabold display-tight" />
+              <Money amount={asset.soldPrice} currency={asset.purchaseCurrency} className="text-[2.6rem] font-extrabold display-tight sm:text-5xl" />
             ) : metrics.currentValue != null ? (
-              <Money amount={metrics.currentValue} currency={cur} animate className="text-5xl font-extrabold display-tight" />
+              <Money amount={metrics.currentValue} currency={cur} animate className="text-[2.6rem] font-extrabold display-tight sm:text-5xl" />
             ) : (
-              <span className="text-2xl font-bold text-paper/60">No estimate yet</span>
+              <span className="text-2xl font-bold text-paper/60">Оценки пока нет</span>
             )}
           </div>
           {!sold && metrics.lowEstimate != null && metrics.highEstimate != null ? (
             <div className="mt-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="label-mono text-paper/60">Estimated range</span>
+              <div className="flex items-center justify-between gap-3">
+                <span className="label-mono text-paper/60">Диапазон</span>
                 <span className="tnum text-sm font-semibold">
                   {formatMoney(metrics.lowEstimate, cur)} — {formatMoney(metrics.highEstimate, cur)}
                 </span>
               </div>
               <RangeBar low={metrics.lowEstimate} high={metrics.highEstimate} value={metrics.currentValue ?? 0} />
               <div className="flex items-center justify-between pt-1">
-                <span className="label-mono text-paper/60">Confidence</span>
+                <span className="label-mono text-paper/60">Уверенность</span>
                 <ConfidenceBadge score={asset.valuationConfidence} kind="valuation" className="bg-paper text-ink" />
               </div>
               {valuation?.trend30d != null ? (
                 <div className="flex items-center justify-between">
-                  <span className="label-mono text-paper/60">30-day trend</span>
+                  <span className="label-mono text-paper/60">Тренд за 30 дней</span>
                   <Delta ratio={valuation.trend30d} currency={cur} className="[&>*]:text-paper" />
                 </div>
               ) : null}
               <p className="label-mono pt-1 text-paper/40">
-                {valuation ? `${valuation.comparablesCount} comparables · ${asset.valuationDate ? formatDate(asset.valuationDate) : ""}` : ""}
+                {valuation ? `${plural(valuation.comparablesCount, ["аналог", "аналога", "аналогов"])} · ${asset.valuationDate ? formatDate(asset.valuationDate) : ""}` : ""}
               </p>
             </div>
           ) : null}
@@ -117,11 +115,11 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
 
         <div className="grid grid-cols-2 gap-px bg-hair md:col-span-2 md:grid-cols-3">
           <Cell>
-            <Stat label="Purchased for" value={<Money amount={metrics.purchasePrice} currency={cur} />} sub={formatDate(asset.purchaseDate)} />
+            <Stat label="Куплено за" value={<Money amount={metrics.purchasePrice} currency={cur} />} sub={formatDate(asset.purchaseDate)} />
           </Cell>
           <Cell>
             <Stat
-              label="Total depreciation"
+              label="Общее обесценивание"
               value={metrics.depreciation != null ? <Money amount={metrics.depreciation} currency={cur} signed /> : "—"}
               tone={metrics.depreciation != null && metrics.depreciation < 0 ? "negative" : "positive"}
               sub={metrics.depreciationPct != null ? formatPercent(metrics.depreciationPct, { signed: true }) : undefined}
@@ -129,19 +127,19 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
           </Cell>
           <Cell className="col-span-2 md:col-span-1" highlight>
             <Stat
-              label="Average cost of ownership"
-              value={metrics.dailyCost != null ? <span className="tnum">{formatMoney(metrics.dailyCost, cur, { decimals: 2 })}<span className="text-sm font-semibold text-ink/60"> / day</span></span> : "—"}
-              sub={metrics.ownershipCost != null ? `${formatMoney(metrics.ownershipCost, cur)} total incl. ${formatMoney(metrics.expensesTotal, cur)} expenses` : undefined}
+              label="Средняя стоимость владения"
+              value={metrics.dailyCost != null ? <span className="tnum">{formatMoney(metrics.dailyCost, cur, { decimals: 0 })}<span className="text-sm font-semibold text-ink/60"> / день</span></span> : "—"}
+              sub={metrics.ownershipCost != null ? `${formatMoney(metrics.ownershipCost, cur)} всего, включая ${formatMoney(metrics.expensesTotal, cur)} расходов` : undefined}
             />
           </Cell>
           <Cell>
-            <Stat label="Ownership duration" value={<span className="tnum">{metrics.daysOwned}<span className="text-sm font-semibold text-gray"> days</span></span>} />
+            <Stat label="В собственности" value={<span className="tnum">{plural(metrics.daysOwned, ["день", "дня", "дней"])}</span>} />
           </Cell>
           <Cell>
-            <Stat label="Estimated quick sale" value={metrics.quickSale != null ? <Money amount={metrics.quickSale} currency={cur} /> : "—"} sub="Sell within days" />
+            <Stat label="Быстрая продажа" value={metrics.quickSale != null ? <Money amount={metrics.quickSale} currency={cur} /> : "—"} sub="Продать за несколько дней" />
           </Cell>
           <Cell>
-            <Stat label="Optimistic sale" value={metrics.highEstimate != null ? <Money amount={metrics.highEstimate} currency={cur} /> : "—"} sub="Patient private sale" />
+            <Stat label="Оптимистичная продажа" value={metrics.highEstimate != null ? <Money amount={metrics.highEstimate} currency={cur} /> : "—"} sub="Терпеливая частная продажа" />
           </Cell>
         </div>
       </section>
@@ -149,7 +147,7 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <div className="flex flex-col gap-4 lg:col-span-2">
           <Panel>
-            <PanelHeader index="H" title="Price history" subtitle={`${pluralize(history.length, "valuation")} · shaded band is the estimated range`} />
+            <PanelHeader index="H" title="История цены" subtitle={`${plural(history.length, ["оценка", "оценки", "оценок"])} · серая полоса — диапазон оценки`} />
             <ValueHistoryChart history={history} currency={cur} purchasePrice={metrics.purchasePrice} />
           </Panel>
 
@@ -164,36 +162,36 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
 
         <div className="flex flex-col gap-4">
           <Panel>
-            <PanelHeader index="T" title="Timeline" />
+            <PanelHeader index="T" title="Хронология" />
             <Timeline items={timeline} />
           </Panel>
 
           <Panel>
-            <PanelHeader index="D" title="Details" />
+            <PanelHeader index="D" title="Данные" />
             <dl className="divide-y divide-hair px-5 text-sm">
-              <Row k="Manufacturer" v={asset.manufacturer} />
-              <Row k="Model" v={asset.model} />
-              <Row k="Variant" v={asset.variant} />
+              <Row k="Производитель" v={asset.manufacturer} />
+              <Row k="Модель" v={asset.model} />
+              <Row k="Вариант" v={asset.variant} />
               {specEntries.map(([k, v]) => (
-                <Row key={k} k={k.replace(/_/g, " ")} v={v} />
+                <Row key={k} k={specLabel(k)} v={v} />
               ))}
-              <Row k="Retailer" v={asset.retailer} />
-              <Row k="Serial number" v={asset.serialNumber} mono />
+              <Row k="Магазин" v={asset.retailer} />
+              <Row k="Серийный номер" v={asset.serialNumber} mono />
               <Row k="IMEI" v={asset.imei} mono />
-              <Row k="Warranty until" v={asset.warrantyExpiration ? formatDate(asset.warrantyExpiration) : null} />
-              <Row k="Notes" v={asset.notes} />
+              <Row k="Гарантия до" v={asset.warrantyExpiration ? formatDate(asset.warrantyExpiration) : null} />
+              <Row k="Заметки" v={asset.notes} />
             </dl>
           </Panel>
 
           {valuation?.notes.length ? (
             <Panel tone="flat" className="p-5">
-              <span className="label-mono text-gray">How this estimate was made</span>
+              <span className="label-mono text-gray">Как получена оценка</span>
               <ul className="mt-2 space-y-1.5 text-[13px] leading-relaxed text-gray">
                 {valuation.notes.map((n, i) => (
                   <li key={i}>{n}</li>
                 ))}
               </ul>
-              <p className="mt-3 text-[11px] text-gray-2">Market values are estimates based on available market data and may differ from actual sale prices.</p>
+              <p className="mt-3 text-[11px] text-gray-2">Рыночная стоимость — оценка на основе доступных рыночных данных; фактическая цена продажи может отличаться.</p>
             </Panel>
           ) : null}
         </div>
@@ -210,7 +208,7 @@ function Row({ k, v, mono }: { k: string; v: string | null | undefined; mono?: b
   if (!v) return null;
   return (
     <div className="flex items-start justify-between gap-4 py-2.5">
-      <dt className="label-mono pt-0.5 capitalize text-gray-2">{k}</dt>
+      <dt className="label-mono pt-0.5 text-gray-2">{k}</dt>
       <dd className={`text-right ${mono ? "font-mono text-[13px]" : ""}`}>{v}</dd>
     </div>
   );

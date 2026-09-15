@@ -3,13 +3,13 @@ import type { ProviderEstimate, ValuationProvider, ValuationRequest } from "../t
 
 /**
  * Generic marketplace provider — integration boundary for a partner pricing
- * API (Back Market, Swappa, Avito, a data vendor…). Expects an endpoint that
+ * API (Авито, Back Market, a data vendor…). Expects an endpoint that
  * accepts a JSON POST with the request shape below and answers with
  * `{ median, p25, p75, count, currency }`. Enabled by MARKETPLACE_API_URL.
  */
 export class MarketplaceProvider implements ValuationProvider {
   readonly id = "marketplace" as const;
-  readonly name = "Marketplace data";
+  readonly name = "Данные маркетплейсов";
   readonly weight = 1.2;
 
   private readonly url = process.env.MARKETPLACE_API_URL;

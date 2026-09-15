@@ -5,7 +5,7 @@ import { hasAnthropicKey } from "@/lib/env";
 import { getStore } from "@/services/data";
 import { requireUser } from "@/services/auth/session";
 
-export const metadata: Metadata = { title: "Add Asset" };
+export const metadata: Metadata = { title: "Добавить актив" };
 export const dynamic = "force-dynamic";
 
 const METHODS: AddMethod[] = ["camera", "upload", "manual", "barcode"];

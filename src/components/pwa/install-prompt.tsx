@@ -29,7 +29,7 @@ export function InstallPrompt({ className }: { className?: string }) {
         if (outcome === "accepted") setEvt(null);
       }}
     >
-      Install app <span aria-hidden="true">↓</span>
+      Установить приложение <span aria-hidden="true">↓</span>
     </button>
   );
 }

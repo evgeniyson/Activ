@@ -1,5 +1,5 @@
 import "server-only";
-import { addMonths, daysBetween, parseISODate, startOfDayUTC, toISODate } from "@/lib/dates";
+import { addMonths, daysBetween, formatDate, parseISODate, startOfDayUTC, toISODate } from "@/lib/dates";
 import { computeAssetMetrics } from "@/lib/finance";
 import type { DataStore, NewAsset, NewValueHistory } from "@/services/data/store";
 import type { Asset, AssetEvent, AssetExpense, AssetImage, AssetMetrics, AssetValueHistory, Profile } from "@/types/domain";
@@ -128,8 +128,8 @@ export async function createAssetWithValuation(store: DataStore, userId: string,
     assetId: asset.id,
     type: "purchased",
     date: asset.purchaseDate,
-    title: "Purchased",
-    description: asset.retailer ? `From ${asset.retailer}` : null,
+    title: "Покупка",
+    description: asset.retailer ? `В ${asset.retailer}` : null,
     amount: asset.purchasePrice,
     currency: asset.purchaseCurrency,
     meta: null,
@@ -139,8 +139,8 @@ export async function createAssetWithValuation(store: DataStore, userId: string,
       assetId: asset.id,
       type: "warranty_added",
       date: asset.purchaseDate,
-      title: "Warranty added",
-      description: `Valid until ${asset.warrantyExpiration}`,
+      title: "Добавлена гарантия",
+      description: `Действует до ${formatDate(asset.warrantyExpiration)}`,
       amount: null,
       currency: null,
       meta: null,
@@ -224,8 +224,8 @@ export function buildTimeline(events: AssetEvent[], history: AssetValueHistory[]
       id: `h-${h.id}`,
       date: h.date,
       kind: "valuation",
-      title: "Market value",
-      description: h.source === "manual" ? "Set manually" : `Estimate · ${Math.round(h.confidence * 100)}% confidence`,
+      title: "Рыночная стоимость",
+      description: h.source === "manual" ? "Задана вручную" : `Оценка · уверенность ${Math.round(h.confidence * 100)}%`,
       amount: h.estimatedValue,
       currency: h.currency,
     });

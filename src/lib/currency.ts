@@ -1,44 +1,45 @@
 /**
- * Currency registry + FX abstraction.
+ * Реестр валют + абстракция курсов.
  *
- * Rates below are a static reference table (base EUR). `FxProvider` is the
- * integration boundary: swap `StaticFxProvider` for a live provider (ECB,
- * OpenExchangeRates, …) without touching callers.
+ * Курсы ниже — статическая справочная таблица (база EUR). `FxProvider` —
+ * граница интеграции: подмените `StaticFxProvider` на живой источник (ЦБ РФ,
+ * ECB, OpenExchangeRates) без изменения вызывающего кода.
  */
 export const CURRENCIES = {
-  EUR: { code: "EUR", symbol: "€", name: "Euro", decimals: 2 },
-  USD: { code: "USD", symbol: "$", name: "US Dollar", decimals: 2 },
-  GBP: { code: "GBP", symbol: "£", name: "British Pound", decimals: 2 },
-  RUB: { code: "RUB", symbol: "₽", name: "Russian Ruble", decimals: 0 },
-  CHF: { code: "CHF", symbol: "CHF", name: "Swiss Franc", decimals: 2 },
-  PLN: { code: "PLN", symbol: "zł", name: "Polish Złoty", decimals: 2 },
-  AED: { code: "AED", symbol: "AED", name: "UAE Dirham", decimals: 2 },
-  KZT: { code: "KZT", symbol: "₸", name: "Kazakhstani Tenge", decimals: 0 },
-  TRY: { code: "TRY", symbol: "₺", name: "Turkish Lira", decimals: 0 },
+  RUB: { code: "RUB", symbol: "₽", name: "Российский рубль", decimals: 0 },
+  USD: { code: "USD", symbol: "$", name: "Доллар США", decimals: 2 },
+  EUR: { code: "EUR", symbol: "€", name: "Евро", decimals: 2 },
+  KZT: { code: "KZT", symbol: "₸", name: "Казахстанский тенге", decimals: 0 },
+  BYN: { code: "BYN", symbol: "Br", name: "Белорусский рубль", decimals: 2 },
+  GBP: { code: "GBP", symbol: "£", name: "Фунт стерлингов", decimals: 2 },
+  AED: { code: "AED", symbol: "AED", name: "Дирхам ОАЭ", decimals: 2 },
+  TRY: { code: "TRY", symbol: "₺", name: "Турецкая лира", decimals: 0 },
+  CNY: { code: "CNY", symbol: "¥", name: "Китайский юань", decimals: 2 },
 } as const;
 
 export type CurrencyCode = keyof typeof CURRENCIES;
 export const CURRENCY_CODES = Object.keys(CURRENCIES) as CurrencyCode[];
+export const DEFAULT_CURRENCY: CurrencyCode = "RUB";
 
 export function isCurrencyCode(v: unknown): v is CurrencyCode {
   return typeof v === "string" && v in CURRENCIES;
 }
 
-/** Units of currency per 1 EUR. */
+/** Единиц валюты за 1 EUR. */
 const EUR_RATES: Record<CurrencyCode, number> = {
   EUR: 1,
   USD: 1.09,
-  GBP: 0.85,
   RUB: 101.5,
-  CHF: 0.94,
-  PLN: 4.28,
-  AED: 4.0,
   KZT: 525,
+  BYN: 3.55,
+  GBP: 0.85,
+  AED: 4.0,
   TRY: 44.5,
+  CNY: 7.85,
 };
 
 export interface FxProvider {
-  /** Returns how many `to` units one `from` unit buys. */
+  /** Сколько единиц `to` даёт одна единица `from`. */
   rate(from: CurrencyCode, to: CurrencyCode): number;
 }
 
@@ -61,8 +62,8 @@ export function convert(amount: number, from: CurrencyCode, to: CurrencyCode): n
   return amount * getFx().rate(from, to);
 }
 
-/** Round to a "human" market price: nearest 5 under 500, nearest 10 above. */
-export function roundMarketPrice(v: number, currency: CurrencyCode = "EUR"): number {
+/** Округление до «человеческой» рыночной цены: шаг растёт с суммой. */
+export function roundMarketPrice(v: number, currency: CurrencyCode = "RUB"): number {
   const inEur = convert(v, currency, "EUR");
   let step: number;
   if (inEur < 50) step = 1;

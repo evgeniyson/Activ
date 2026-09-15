@@ -17,15 +17,15 @@ const MAX_BYTES = 15 * 1024 * 1024;
  */
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "Требуется вход" }, { status: 401 });
 
   const contentType = req.headers.get("content-type") ?? "";
   if (contentType.includes("application/json")) {
     const body = (await req.json().catch(() => ({}))) as { barcode?: string };
     const code = (body.barcode ?? "").replace(/\D/g, "");
-    if (code.length < 8) return NextResponse.json({ error: "Enter a valid barcode (EAN/UPC)." }, { status: 400 });
+    if (code.length < 8) return NextResponse.json({ error: "Введите корректный штрих-код (EAN/UPC)." }, { status: 400 });
     const result = identifyByBarcode(code);
-    if (!result) return NextResponse.json({ error: "We don't have this barcode in our catalog yet. Add the item manually instead." }, { status: 404 });
+    if (!result) return NextResponse.json({ error: "Этого штрих-кода пока нет в нашем каталоге. Добавьте предмет вручную." }, { status: 404 });
     return NextResponse.json({ identification: result, image: null });
   }
 
@@ -33,12 +33,12 @@ export async function POST(req: NextRequest) {
   try {
     form = await req.formData();
   } catch {
-    return NextResponse.json({ error: "Invalid upload." }, { status: 400 });
+    return NextResponse.json({ error: "Некорректная загрузка." }, { status: 400 });
   }
   const file = form.get("image");
   const hint = typeof form.get("hint") === "string" ? String(form.get("hint")).slice(0, 120) : undefined;
-  if (!(file instanceof File)) return NextResponse.json({ error: "No image received." }, { status: 400 });
-  if (file.size > MAX_BYTES) return NextResponse.json({ error: "Image is too large (max 15 MB)." }, { status: 413 });
+  if (!(file instanceof File)) return NextResponse.json({ error: "Изображение не получено." }, { status: 400 });
+  if (file.size > MAX_BYTES) return NextResponse.json({ error: "Слишком большое изображение (максимум 15 МБ)." }, { status: 413 });
 
   track("asset_scan_started", { size: file.size });
 
@@ -52,9 +52,9 @@ export async function POST(req: NextRequest) {
     width = out.info.width;
     height = out.info.height;
   } catch {
-    return NextResponse.json({ error: "We couldn't read that image. Try a JPEG or PNG photo." }, { status: 415 });
+    return NextResponse.json({ error: "Не удалось прочитать изображение. Попробуйте фото в JPEG или PNG." }, { status: 415 });
   }
-  if (width < 200 || height < 200) return NextResponse.json({ error: "The photo is too small to analyse. Move closer and try again." }, { status: 422 });
+  if (width < 200 || height < 200) return NextResponse.json({ error: "Фото слишком маленькое для анализа. Подойдите ближе и попробуйте снова." }, { status: 422 });
 
   const storagePath = `${user.id}/scans/${randomUUID()}.jpg`;
   const stored = await getFileStorage().put(storagePath, jpeg, "image/jpeg");
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     track("asset_identified", { provider: result.provider, recognized: result.recognized, confidence: result.confidence });
     return NextResponse.json({ identification: result, image: { ...stored, width, height } });
   } catch (err) {
-    const e = err instanceof IdentificationError ? err : new IdentificationError("AI identification failed.", "provider_error");
+    const e = err instanceof IdentificationError ? err : new IdentificationError("Не удалось распознать предмет.", "provider_error");
     const status = e.code === "unavailable" ? 503 : e.code === "timeout" ? 504 : 502;
     return NextResponse.json({ error: e.message, code: e.code, image: { ...stored, width, height } }, { status });
   }

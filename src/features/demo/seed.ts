@@ -22,7 +22,7 @@ interface SeedAsset {
   expenses?: { type: ExpenseType; amount: number; date: string; title: string }[];
 }
 
-/** Realistic demo portfolio — dates relative to Sept 2026. */
+/** Реалистичный демо-портфель для российского рынка — даты относительно сентября 2026. */
 export const DEMO_ASSETS: SeedAsset[] = [
   {
     name: "iPhone 17 Pro",
@@ -31,18 +31,18 @@ export const DEMO_ASSETS: SeedAsset[] = [
     model: "iPhone 17 Pro",
     variant: "256 GB",
     catalogId: "apple-iphone-17-pro",
-    specs: { storage: "256 GB", color: "Deep Blue" },
-    purchasePrice: 1299,
-    purchaseCurrency: "EUR",
+    specs: { storage: "256 GB", color: "Тёмно-синий" },
+    purchasePrice: 139990,
+    purchaseCurrency: "RUB",
     purchaseDate: "2025-10-20",
-    retailer: "Apple Store",
+    retailer: "re:Store",
     condition: "excellent",
     serialNumber: "F2LXK7QP0R",
     warrantyExpiration: "2026-10-20",
-    notes: "Daily driver. Case since day one.",
+    notes: "Основной телефон. С первого дня в чехле.",
     expenses: [
-      { type: "accessory", amount: 59, date: "2025-10-22", title: "Leather case" },
-      { type: "repair", amount: 149, date: "2026-04-18", title: "Battery replacement" },
+      { type: "accessory", amount: 5990, date: "2025-10-22", title: "Кожаный чехол" },
+      { type: "repair", amount: 14900, date: "2026-04-18", title: "Замена аккумулятора" },
     ],
   },
   {
@@ -53,15 +53,15 @@ export const DEMO_ASSETS: SeedAsset[] = [
     variant: "16 GB / 512 GB",
     catalogId: "apple-macbook-air-13-m4",
     specs: { chip: "M4", memory: "16 GB", storage: "512 GB", color: "Midnight" },
-    purchasePrice: 1499,
-    purchaseCurrency: "EUR",
+    purchasePrice: 149990,
+    purchaseCurrency: "RUB",
     purchaseDate: "2025-04-02",
-    retailer: "MediaMarkt",
+    retailer: "М.Видео",
     condition: "excellent",
     serialNumber: "C02ZK3XLMD6T",
     warrantyExpiration: "2027-04-02",
     notes: null,
-    expenses: [{ type: "accessory", amount: 89, date: "2025-04-05", title: "USB-C hub" }],
+    expenses: [{ type: "accessory", amount: 8990, date: "2025-04-05", title: "USB-C хаб" }],
   },
   {
     name: "Sony α7 IV",
@@ -70,18 +70,18 @@ export const DEMO_ASSETS: SeedAsset[] = [
     model: "α7 IV",
     variant: "Body only",
     catalogId: "sony-a7-iv",
-    specs: { sensor: "33 MP full-frame", kit: "Body only", shutter_count: "18 400" },
-    purchasePrice: 2599,
-    purchaseCurrency: "EUR",
+    specs: { sensor: "33 Мп, полный кадр", kit: "Body only", shutter_count: "18 400" },
+    purchasePrice: 259990,
+    purchaseCurrency: "RUB",
     purchaseDate: "2023-05-12",
-    retailer: "Calumet",
+    retailer: "Фотосклад",
     condition: "good",
     serialNumber: "3175442",
     warrantyExpiration: null,
-    notes: "Minor wear on the grip.",
+    notes: "Небольшие потёртости на рукоятке.",
     expenses: [
-      { type: "maintenance", amount: 60, date: "2025-11-03", title: "Sensor cleaning" },
-      { type: "accessory", amount: 129, date: "2023-05-20", title: "Spare batteries + charger" },
+      { type: "maintenance", amount: 6000, date: "2025-11-03", title: "Чистка матрицы" },
+      { type: "accessory", amount: 12900, date: "2023-05-20", title: "Запасные аккумуляторы и зарядка" },
     ],
   },
   {
@@ -92,15 +92,15 @@ export const DEMO_ASSETS: SeedAsset[] = [
     variant: "Disc Edition",
     catalogId: "sony-playstation-5",
     specs: { edition: "Disc Edition", storage: "825 GB" },
-    purchasePrice: 499,
-    purchaseCurrency: "EUR",
+    purchasePrice: 59990,
+    purchaseCurrency: "RUB",
     purchaseDate: "2021-03-10",
-    retailer: "Amazon",
+    retailer: "DNS",
     condition: "good",
     serialNumber: null,
     warrantyExpiration: null,
     notes: null,
-    expenses: [{ type: "accessory", amount: 69, date: "2022-01-15", title: "Second DualSense controller" }],
+    expenses: [{ type: "accessory", amount: 6490, date: "2022-01-15", title: "Второй геймпад DualSense" }],
   },
   {
     name: "Apple Watch Series 10",
@@ -109,11 +109,11 @@ export const DEMO_ASSETS: SeedAsset[] = [
     model: "Apple Watch Series 10",
     variant: "46 mm GPS",
     catalogId: "apple-watch-series-10",
-    specs: { size: "46 mm", connectivity: "GPS", case: "Aluminium", color: "Jet Black" },
-    purchasePrice: 479,
-    purchaseCurrency: "EUR",
+    specs: { size: "46 mm", connectivity: "GPS", case: "Алюминий", color: "Jet Black" },
+    purchasePrice: 49990,
+    purchaseCurrency: "RUB",
     purchaseDate: "2024-10-01",
-    retailer: "Apple Store",
+    retailer: "re:Store",
     condition: "excellent",
     serialNumber: null,
     warrantyExpiration: "2026-10-01",
@@ -126,15 +126,15 @@ export const DEMO_ASSETS: SeedAsset[] = [
     model: "AirPods Pro 2",
     variant: null,
     catalogId: "apple-airpods-pro-2",
-    specs: { type: "In-ear, ANC", color: "White" },
-    purchasePrice: 279,
-    purchaseCurrency: "EUR",
+    specs: { type: "Вкладыши, ANC", color: "Белый" },
+    purchasePrice: 24990,
+    purchaseCurrency: "RUB",
     purchaseDate: "2023-12-20",
-    retailer: "Apple Store",
+    retailer: "Ozon",
     condition: "good",
     serialNumber: null,
     warrantyExpiration: null,
-    notes: "Left bud slightly quieter.",
+    notes: "Левый наушник чуть тише.",
   },
   {
     name: "GeForce RTX 4080 Super",
@@ -144,10 +144,10 @@ export const DEMO_ASSETS: SeedAsset[] = [
     variant: null,
     catalogId: "nvidia-rtx-4080-super",
     specs: { memory: "16 GB GDDR6X", board_partner: "ASUS TUF" },
-    purchasePrice: 1149,
-    purchaseCurrency: "EUR",
+    purchasePrice: 119990,
+    purchaseCurrency: "RUB",
     purchaseDate: "2024-02-15",
-    retailer: "Alternate",
+    retailer: "Ситилинк",
     condition: "excellent",
     serialNumber: null,
     warrantyExpiration: "2027-02-15",
@@ -180,9 +180,13 @@ export async function seedDemoPortfolio(store: DataStore, userId: string, profil
     });
     for (const e of s.expenses ?? []) {
       await store.addExpense(userId, { assetId: asset.id, type: e.type, amount: e.amount, currency: s.purchaseCurrency, date: e.date, title: e.title, notes: null });
-      await store.addEvent(userId, { assetId: asset.id, type: "expense", date: e.date, title: e.title, description: e.type.charAt(0).toUpperCase() + e.type.slice(1), amount: e.amount, currency: s.purchaseCurrency, meta: null });
+      await store.addEvent(userId, { assetId: asset.id, type: "expense", date: e.date, title: e.title, description: expenseLabel(e.type), amount: e.amount, currency: s.purchaseCurrency, meta: null });
     }
     created.push(asset);
   }
   return created;
+}
+
+function expenseLabel(t: ExpenseType): string {
+  return { repair: "Ремонт", accessory: "Аксессуар", maintenance: "Обслуживание", insurance: "Страховка", subscription: "Подписка", upgrade: "Апгрейд", other: "Другое" }[t];
 }

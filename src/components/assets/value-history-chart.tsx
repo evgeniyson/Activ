@@ -29,7 +29,7 @@ export function ValueHistoryChart({ history, currency, purchasePrice, height = 2
   }, [data, purchasePrice]);
 
   if (data.length < 2) {
-    return <div className="flex items-center justify-center px-6 py-10 text-center text-sm text-gray">Price history will appear after a few valuations.</div>;
+    return <div className="flex items-center justify-center px-6 py-10 text-center text-sm text-gray">История цены появится после нескольких оценок.</div>;
   }
 
   return (
@@ -46,7 +46,7 @@ export function ValueHistoryChart({ history, currency, purchasePrice, height = 2
             <XAxis dataKey="date" hide />
             <YAxis domain={domain} hide />
             <Tooltip content={<Tip currency={currency} />} cursor={{ stroke: "#000", strokeDasharray: "2 3" }} isAnimationActive={false} />
-            <ReferenceLine y={purchasePrice} stroke="#A7A7A7" strokeDasharray="3 3" label={{ value: "Paid", position: "insideTopRight", fill: "#646464", fontSize: 10, fontFamily: "var(--font-jetbrains)" }} />
+            <ReferenceLine y={purchasePrice} stroke="#A7A7A7" strokeDasharray="3 3" label={{ value: "Покупка", position: "insideTopRight", fill: "#646464", fontSize: 10, fontFamily: "var(--font-jetbrains)" }} />
             <Area type="monotone" dataKey="high" stroke="none" fill="url(#rangeFill)" isAnimationActive={false} />
             <Area type="monotone" dataKey="low" stroke="none" fill="#F9F9F9" isAnimationActive={false} />
             <Line type="monotone" dataKey="value" stroke="#E85002" strokeWidth={2} dot={false} isAnimationActive={false} activeDot={{ r: 4, fill: "#000", stroke: "#F9F9F9", strokeWidth: 2 }} />
@@ -70,7 +70,7 @@ function Tip({ active, payload, currency }: { active?: boolean; payload?: { payl
       <div className="tnum text-base font-bold">{formatMoney(p.value, currency)}</div>
       <div className="label-mono text-paper/60">
         {formatMoney(p.low, currency)} – {formatMoney(p.high, currency)}
-        {p.manual ? " · manual" : ""}
+        {p.manual ? " · вручную" : ""}
       </div>
     </div>
   );

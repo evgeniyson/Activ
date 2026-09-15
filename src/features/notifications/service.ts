@@ -1,19 +1,18 @@
 import "server-only";
-import { formatMoney, formatPercent } from "@/lib/format";
-import { daysBetween, parseISODate, toISODate } from "@/lib/dates";
+import { formatMoney, formatPercent, plural } from "@/lib/format";
+import { daysBetween, formatMonth, parseISODate } from "@/lib/dates";
 import type { DataStore } from "@/services/data/store";
 import type { Asset, Notification, Profile } from "@/types/domain";
 import type { ValuationResult } from "@/valuation";
 import { buildRecommendation } from "@/features/insights/keep-sell";
 
 /**
- * Notification rules. Idempotent per (type, asset, day): callers can run
- * this on every dashboard load without spamming the user.
+ * Правила уведомлений. Идемпотентны по (тип, актив, период): можно вызывать
+ * на каждой загрузке дашборда без спама.
  */
 export async function generateNotifications(store: DataStore, userId: string, profile: Profile, assets: Asset[], valuations: Map<string, ValuationResult | null>, now = new Date()): Promise<Notification[]> {
   const prefs = profile.notificationPrefs;
   const recent = await store.listNotifications(userId, { limit: 200 });
-  const today = toISODate(now);
   const exists = (type: Notification["type"], assetId: string | null, withinDays = 1) =>
     recent.some((n) => n.type === type && n.assetId === assetId && daysBetween(new Date(n.createdAt), now) < withinDays);
   const created: Notification[] = [];
@@ -28,8 +27,8 @@ export async function generateNotifications(store: DataStore, userId: string, pr
       created.push(
         await store.addNotification(userId, {
           type: dropped ? "value_dropped" : "value_increased",
-          title: `${asset.name} ${dropped ? "lost" : "gained"} ${formatPercent(Math.abs(v.trend30d))} in 30 days`,
-          body: `Estimated value is now ${formatMoney(v.estimatedValue, cur)} (${formatMoney(v.lowEstimate, cur)} – ${formatMoney(v.highEstimate, cur)}).`,
+          title: `${asset.name} ${dropped ? "подешевел" : "подорожал"} на ${formatPercent(Math.abs(v.trend30d))} за 30 дней`,
+          body: `Оценочная стоимость сейчас ${formatMoney(v.estimatedValue, cur)} (${formatMoney(v.lowEstimate, cur)} – ${formatMoney(v.highEstimate, cur)}).`,
           assetId: asset.id,
           href: `/app/assets/${asset.id}`,
         }),
@@ -42,7 +41,7 @@ export async function generateNotifications(store: DataStore, userId: string, pr
         created.push(
           await store.addNotification(userId, {
             type: "good_time_to_sell",
-            title: `Consider selling ${asset.name}`,
+            title: `Возможно, пора продать ${asset.name}`,
             body: rec.summary,
             assetId: asset.id,
             href: `/app/assets/${asset.id}#insights`,
@@ -57,8 +56,8 @@ export async function generateNotifications(store: DataStore, userId: string, pr
         created.push(
           await store.addNotification(userId, {
             type: "warranty_expiring",
-            title: `Warranty on ${asset.name} ends in ${left} day${left === 1 ? "" : "s"}`,
-            body: "Check the device now — repairs after the warranty date are on you.",
+            title: `Гарантия на ${asset.name} заканчивается через ${plural(left, ["день", "дня", "дней"])}`,
+            body: "Проверьте устройство сейчас — ремонт после окончания гарантии будет за ваш счёт.",
             assetId: asset.id,
             href: `/app/assets/${asset.id}`,
           }),
@@ -67,20 +66,18 @@ export async function generateNotifications(store: DataStore, userId: string, pr
     }
   }
 
-  // Monthly report on the first days of a month.
+  // Ежемесячный отчёт в первые дни месяца.
   if (prefs.monthlyReport && assets.length && now.getUTCDate() <= 3 && !exists("monthly_report", null, 28)) {
     const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
-    const label = d.toLocaleString("en-GB", { month: "long", timeZone: "UTC" });
     created.push(
       await store.addNotification(userId, {
         type: "monthly_report",
-        title: `Your ${label} report is ready`,
-        body: "See how your portfolio moved, the biggest loss and the best performer.",
+        title: `Готов отчёт за ${formatMonth(d).toLowerCase()}`,
+        body: "Как изменился портфель, самая большая потеря и лучший результат месяца.",
         assetId: null,
         href: `/app/insights?month=${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`,
       }),
     );
   }
-  void today;
   return created;
 }

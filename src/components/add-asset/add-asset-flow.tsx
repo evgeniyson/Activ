@@ -93,7 +93,7 @@ export function AddAssetFlow({ initialMethod, currency, aiEnabled }: { initialMe
         const json = (await res.json().catch(() => ({}))) as IdentifyResponse;
         if (json.image) setScanImage(json.image);
         if (!res.ok || !json.identification) {
-          setIdentifyError(json.error ?? "We couldn't identify this item.");
+          setIdentifyError(json.error ?? "Не удалось распознать предмет.");
           setAnalysisDone(true);
           return;
         }
@@ -101,7 +101,7 @@ export function AddAssetFlow({ initialMethod, currency, aiEnabled }: { initialMe
         setAnalysisDone(true);
       } catch (err) {
         if ((err as Error).name === "AbortError") return;
-        setIdentifyError(navigator.onLine ? "Something went wrong while analysing the photo." : "You're offline. Connect to the internet to identify items, or add it manually.");
+        setIdentifyError(navigator.onLine ? "Что-то пошло не так при анализе фото." : "Вы офлайн. Подключитесь к интернету для распознавания или добавьте предмет вручную.");
         setAnalysisDone(true);
       }
     },
@@ -122,12 +122,12 @@ export function AddAssetFlow({ initialMethod, currency, aiEnabled }: { initialMe
       const res = await fetch("/api/identify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ barcode: code }) });
       const json = (await res.json().catch(() => ({}))) as IdentifyResponse;
       if (!res.ok || !json.identification) {
-        setIdentifyError(json.error ?? "Barcode not found.");
+        setIdentifyError(json.error ?? "Штрих-код не найден.");
       } else {
         applyIdentification(json.identification);
       }
     } catch {
-      setIdentifyError("Couldn't look up that barcode.");
+      setIdentifyError("Не удалось найти этот штрих-код.");
     } finally {
       setAnalysisDone(true);
     }
@@ -183,16 +183,16 @@ export function AddAssetFlow({ initialMethod, currency, aiEnabled }: { initialMe
       <div className="mb-6 flex items-center justify-between">
         {step !== "done" && step !== "analyzing" && step !== "saving" ? (
           <button type="button" onClick={back} className="label-mono-md inline-flex items-center gap-1.5 text-gray hover:text-ink">
-            <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Назад
           </button>
         ) : (
           <span />
         )}
         <div className="flex items-center gap-4">
           <span className="label-mono text-gray-2">
-            Step {STEP_INDEX[step]} <span className="text-hair-strong">/</span> 07
+            Шаг {STEP_INDEX[step]} <span className="text-hair-strong">/</span> 07
           </span>
-          <Link href="/app" aria-label="Close" className="flex h-9 w-9 items-center justify-center text-gray hover:text-ink">
+          <Link href="/app" aria-label="Закрыть" className="flex h-9 w-9 items-center justify-center text-gray hover:text-ink">
             <X className="h-5 w-5" aria-hidden="true" />
           </Link>
         </div>

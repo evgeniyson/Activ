@@ -11,6 +11,7 @@ import { Delta } from "@/components/ui/stat";
 
 type Period = "1M" | "3M" | "6M" | "1Y" | "ALL";
 const DAYS: Record<Period, number> = { "1M": 30, "3M": 90, "6M": 182, "1Y": 365, ALL: 10_000 };
+const PERIOD_LABELS: Record<Period, string> = { "1M": "1М", "3M": "3М", "6M": "6М", "1Y": "1Г", ALL: "ВСЁ" };
 
 export function PortfolioChart({ series, currency, height = 240 }: { series: ChartPoint[]; currency: CurrencyCode; height?: number }) {
   const [period, setPeriod] = useState<Period>("6M");
@@ -37,14 +38,14 @@ export function PortfolioChart({ series, currency, height = 240 }: { series: Cha
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 pt-4 sm:px-5">
         <div className="flex items-baseline gap-3">
-          <span className="label-mono text-gray">Portfolio value</span>
+          <span className="label-mono text-gray">Стоимость портфеля</span>
           {data.length > 1 ? <Delta amount={change} ratio={first ? change / first : null} currency={currency} /> : null}
         </div>
-        <Segmented ariaLabel="Chart period" value={period} onChange={setPeriod} options={(["1M", "3M", "6M", "1Y", "ALL"] as Period[]).map((p) => ({ value: p, label: p }))} />
+        <Segmented ariaLabel="Период графика" value={period} onChange={setPeriod} options={(["1M", "3M", "6M", "1Y", "ALL"] as Period[]).map((p) => ({ value: p, label: PERIOD_LABELS[p] }))} />
       </div>
       <div style={{ height }} className="mt-2 w-full">
         {data.length < 2 ? (
-          <div className="flex h-full items-center justify-center px-6 text-center text-sm text-gray">Value history builds up as your assets get re-valued. Check back tomorrow.</div>
+          <div className="flex h-full items-center justify-center px-6 text-center text-sm text-gray">История накапливается по мере переоценки активов. Загляните завтра.</div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 12, right: 8, bottom: 0, left: 8 }}>
@@ -79,7 +80,7 @@ function ChartTip({ active, payload, currency }: { active?: boolean; payload?: {
     <div className="bg-ink px-3 py-2 text-paper">
       <div className="label-mono text-paper/60">{formatDate(p.date)}</div>
       <div className="tnum text-base font-bold">{formatMoney(p.value, currency)}</div>
-      <div className="label-mono text-paper/60">Paid {formatMoney(p.purchase, currency)}</div>
+      <div className="label-mono text-paper/60">Куплено за {formatMoney(p.purchase, currency)}</div>
     </div>
   );
 }

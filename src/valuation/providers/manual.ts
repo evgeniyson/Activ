@@ -8,7 +8,7 @@ import type { ProviderEstimate, ValuationProvider, ValuationRequest } from "../t
  */
 export class ManualProvider implements ValuationProvider {
   readonly id = "manual" as const;
-  readonly name = "Manual value";
+  readonly name = "Ручная оценка";
   readonly weight = 3;
 
   isAvailable() {
@@ -28,7 +28,7 @@ export class ManualProvider implements ValuationProvider {
       confidence: 0.75,
       comparablesCount: 1,
       currency: req.currency,
-      notes: [`Manual value set on ${o.date}.`],
+      notes: [`Стоимость задана вручную ${o.date}.`],
     };
   }
 }

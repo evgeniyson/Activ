@@ -13,14 +13,14 @@ import { generateNotifications } from "@/features/notifications/service";
 import { getPortfolioOverview } from "@/features/portfolio/service";
 import { ensureProfile } from "@/features/profile/service";
 import { buildValuationRequest } from "@/features/assets/service";
-import { formatMoney, formatPercent } from "@/lib/format";
+import { formatMoney, formatPercent, plural } from "@/lib/format";
 import { track } from "@/lib/analytics";
 import { getStore } from "@/services/data";
 import { requireUser } from "@/services/auth/session";
 import { getValuationEngine, type ValuationResult } from "@/valuation";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = { title: "Overview" };
+export const metadata: Metadata = { title: "Обзор" };
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
@@ -30,7 +30,6 @@ export default async function DashboardPage() {
   const overview = await getPortfolioOverview(store, user.id, profile);
   track("portfolio_viewed", { assets: overview.items.length });
 
-  // Notification rules run opportunistically on dashboard load (cheap + idempotent).
   if (overview.items.length) {
     const engine = getValuationEngine();
     const valuations = new Map<string, ValuationResult | null>();
@@ -45,21 +44,21 @@ export default async function DashboardPage() {
   if (!items.length) {
     return (
       <>
-        <PageHeader index="000" title="Overview" description="Your financial portfolio of physical things." />
+        <PageHeader index="000" title="Обзор" description="Финансовый портфель ваших вещей." />
         <EmptyState
-          title="Your portfolio is empty."
-          description="Start by adding something you already own. You'll see what it's worth today, how much it has lost and what owning it costs you per day."
+          title="Ваш портфель пуст."
+          description="Начните с того, что у вас уже есть. Вы увидите, сколько это стоит сегодня, сколько потеряло в цене и во сколько обходится владение каждый день."
           action={
             <>
               <ButtonLink href="/app/assets/new?method=camera" variant="accent">
-                Scan Your First Asset
+                Отсканировать первый актив
               </ButtonLink>
               <ButtonLink href="/app/assets/new?method=manual" variant="outline">
-                Add manually
+                Добавить вручную
               </ButtonLink>
               <form action={loadDemoPortfolioAction}>
                 <Button type="submit" variant="ghost">
-                  Try with a demo portfolio →
+                  Попробовать на демо-портфеле →
                 </Button>
               </form>
             </>
@@ -73,57 +72,54 @@ export default async function DashboardPage() {
     <>
       <PageHeader
         index="001"
-        title="Your Assets"
-        description={`${totals.assetCount} items · ${totals.valuedCount} valued · ${formatMoney(totals.expensesTotal, currency)} in extra expenses`}
+        title="Ваши активы"
+        description={`${plural(totals.assetCount, ["предмет", "предмета", "предметов"])} · ${totals.valuedCount} с оценкой · ${formatMoney(totals.expensesTotal, currency)} доп. расходов`}
         action={
           <ButtonLink href="/app/assets/new" variant="accent" className="hidden lg:inline-flex">
-            <Plus className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" /> Add Asset
+            <Plus className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" /> Добавить актив
           </ButtonLink>
         }
       />
 
-      {/* Hero numbers */}
-      <section className="grid gap-px border border-hair bg-hair sm:grid-cols-2 lg:grid-cols-4" aria-label="Portfolio summary">
+      <section className="grid gap-px border border-hair bg-hair sm:grid-cols-2 lg:grid-cols-4" aria-label="Сводка по портфелю">
         <div className="col-span-full bg-ink px-5 py-6 text-paper sm:col-span-2 lg:col-span-2 lg:px-7 lg:py-8">
-          <span className="label-mono text-paper/60">Current value</span>
+          <span className="label-mono text-paper/60">Текущая стоимость</span>
           <div className="mt-2 flex flex-wrap items-end gap-x-4 gap-y-1">
-            <Money amount={totals.currentValue} currency={currency} animate className="text-[2.6rem] font-extrabold leading-none display-tight sm:text-6xl" />
+            <Money amount={totals.currentValue} currency={currency} animate className="text-[2.4rem] font-extrabold leading-none display-tight sm:text-6xl" />
             <Delta amount={change30d} ratio={change30dPct} currency={currency} size="md" className="mb-1 [&>*]:text-paper [&>*:last-child]:text-paper/60" />
           </div>
           <div className="mt-4 flex items-center gap-2">
-            <span className="label-mono text-paper/60">30D change</span>
+            <span className="label-mono text-paper/60">За 30 дней</span>
             <span className="h-px flex-1 bg-paper/20" />
-            <span className="label-mono text-orange">Est. range ±{formatPercent(rangeWidth(items))}</span>
+            <span className="label-mono text-orange">Диапазон оценки ±{formatPercent(rangeWidth(items))}</span>
           </div>
         </div>
         <div className="bg-paper px-5 py-5 lg:px-6">
-          <Stat label="Purchased for" value={<Money amount={totals.purchaseValue} currency={currency} />} size="md" />
+          <Stat label="Куплено за" value={<Money amount={totals.purchaseValue} currency={currency} />} size="md" />
           <div className="mt-4 border-t border-hair pt-3">
-            <Stat label="Extra expenses" value={<Money amount={totals.expensesTotal} currency={currency} />} size="sm" />
+            <Stat label="Доп. расходы" value={<Money amount={totals.expensesTotal} currency={currency} />} size="sm" />
           </div>
         </div>
         <div className="bg-paper px-5 py-5 lg:px-6">
-          <Stat label="Total depreciation" value={<Money amount={totals.depreciation} currency={currency} signed />} size="md" tone={totals.depreciation < 0 ? "negative" : "positive"} sub={<Delta ratio={totals.depreciationPct} currency={currency} />} />
+          <Stat label="Общее обесценивание" value={<Money amount={totals.depreciation} currency={currency} signed />} size="md" tone={totals.depreciation < 0 ? "negative" : "positive"} sub={<Delta ratio={totals.depreciationPct} currency={currency} />} />
           <div className="mt-4 border-t border-hair pt-3">
-            <Stat label="Ownership cost" value={<span className="tnum">{formatMoney(dailyTotal, currency, { decimals: 2 })}<span className="text-sm font-semibold text-gray"> / day</span></span>} size="sm" />
+            <Stat label="Стоимость владения" value={<span className="tnum">{formatMoney(dailyTotal, currency, { decimals: 0 })}<span className="text-sm font-semibold text-gray"> / день</span></span>} size="sm" />
           </div>
         </div>
       </section>
 
-      {/* Chart */}
       <Panel className="mt-4">
         <PortfolioChart series={series} currency={currency} />
       </Panel>
 
       <div className="mt-4 grid min-w-0 gap-4 lg:grid-cols-3">
-        {/* Assets */}
         <Panel className="min-w-0 lg:col-span-2">
           <PanelHeader
             index="002"
-            title="Assets"
+            title="Активы"
             action={
               <Link href="/app/assets" className="label-mono-md flex items-center gap-1 text-ink hover:text-orange">
-                View all <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                Все активы <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             }
           />
@@ -135,21 +131,20 @@ export default async function DashboardPage() {
             ))}
         </Panel>
 
-        {/* Right column */}
         <div className="flex min-w-0 flex-col gap-4">
           <Panel tone="orange" className="p-5">
-            <span className="label-mono text-ink/70">Cost of ownership</span>
-            <p className="tnum mt-2 text-4xl font-extrabold display-tight">{formatMoney(dailyTotal, currency, { decimals: 2 })}<span className="text-base font-semibold"> / day</span></p>
+            <span className="label-mono text-ink/70">Стоимость владения</span>
+            <p className="tnum mt-2 text-4xl font-extrabold display-tight">{formatMoney(dailyTotal, currency, { decimals: 0 })}<span className="text-base font-semibold"> / день</span></p>
             <p className="mt-3 text-[13px] leading-relaxed text-ink/80">
-              What owning everything in your portfolio costs you on average, every day — purchase price plus expenses, minus what it&apos;s worth now.
+              Во сколько вам в среднем обходится владение всем портфелем каждый день: цена покупки плюс расходы минус то, сколько вещи стоят сейчас.
             </p>
             <Link href="/app/insights" className="label-mono-md mt-4 inline-flex items-center gap-1 border-b border-ink pb-0.5 hover:text-paper hover:border-paper">
-              Insights <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+              Аналитика <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
             </Link>
           </Panel>
 
           <Panel>
-            <PanelHeader index="003" title="30-day movers" />
+            <PanelHeader index="003" title="Движение за 30 дней" />
             {topMovers.length ? (
               topMovers.map(({ asset, change30d, metrics }) => (
                 <Link key={asset.id} href={`/app/assets/${asset.id}`} className="flex items-center justify-between gap-3 border-b border-hair px-5 py-3 last:border-b-0 hover:bg-black/[0.03]">
@@ -161,12 +156,12 @@ export default async function DashboardPage() {
                 </Link>
               ))
             ) : (
-              <p className="px-5 py-6 text-sm text-gray">Movement shows up after your assets get their first re-valuation.</p>
+              <p className="px-5 py-6 text-sm text-gray">Движение появится после первой переоценки активов.</p>
             )}
           </Panel>
         </div>
       </div>
-      <p className="mt-6 text-[12px] text-gray-2">Market values are estimates based on available market data and may differ from actual sale prices.</p>
+      <p className="mt-6 text-[12px] text-gray-2">Рыночная стоимость — оценка на основе доступных рыночных данных; фактическая цена продажи может отличаться.</p>
     </>
   );
 }

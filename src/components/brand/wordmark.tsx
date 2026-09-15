@@ -21,7 +21,7 @@ export function Wordmark({ tone = "black", height = 22, className, href, priorit
   );
   if (href) {
     return (
-      <Link href={href} className="inline-flex items-center" aria-label="АКТИВ home">
+      <Link href={href} className="inline-flex items-center" aria-label="АКТИВ — на главную">
         {img}
       </Link>
     );

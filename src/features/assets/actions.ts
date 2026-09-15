@@ -11,7 +11,7 @@ import { requireUser } from "@/services/auth/session";
 import { getFileStorage } from "@/services/storage";
 import { ensureProfile } from "@/features/profile/service";
 import type { Asset, AssetCategory, Condition, CurrencyCode } from "@/types/domain";
-import { CONDITION_LABELS } from "@/types/domain";
+import { CONDITION_LABELS, EXPENSE_LABELS } from "@/types/domain";
 import { createAssetSchema, expenseSchema, manualValueSchema, markSoldSchema, updateAssetSchema } from "./schemas";
 import { createAssetWithValuation, revalueAsset } from "./service";
 
@@ -19,7 +19,7 @@ export type ActionResult<T = undefined> = { ok: true; data: T } | { ok: false; e
 
 function fail(err: z.ZodError): ActionResult<never> {
   const issue = err.issues[0];
-  return { ok: false, error: issue?.message ?? "Invalid input.", field: issue?.path.join(".") };
+  return { ok: false, error: issue?.message ?? "Некорректные данные.", field: issue?.path.join(".") };
 }
 
 function revalidateAll(assetId?: string) {
@@ -111,21 +111,21 @@ export async function updateAssetAction(id: string, raw: unknown): Promise<Actio
   if (!parsed.success) return fail(parsed.error);
   const store = await getStore();
   const existing = await store.getAsset(user.id, id);
-  if (!existing) return { ok: false, error: "Asset not found." };
+  if (!existing) return { ok: false, error: "Актив не найден." };
   const patch = parsed.data;
   const updated = await store.updateAsset(user.id, id, {
     ...(patch as Partial<Asset>),
     specs: patch.specs ?? existing.specs,
   });
-  if (!updated) return { ok: false, error: "Asset not found." };
+  if (!updated) return { ok: false, error: "Актив не найден." };
 
   if (patch.condition && patch.condition !== existing.condition) {
-    await store.addEvent(user.id, { assetId: id, type: "condition_changed", date: toISODate(new Date()), title: `Condition changed to ${CONDITION_LABELS[patch.condition as Condition]}`, description: null, amount: null, currency: null, meta: null });
+    await store.addEvent(user.id, { assetId: id, type: "condition_changed", date: toISODate(new Date()), title: `Состояние изменено: ${CONDITION_LABELS[patch.condition as Condition]}`, description: null, amount: null, currency: null, meta: null });
   } else {
-    await store.addEvent(user.id, { assetId: id, type: "edited", date: toISODate(new Date()), title: "Details updated", description: null, amount: null, currency: null, meta: null });
+    await store.addEvent(user.id, { assetId: id, type: "edited", date: toISODate(new Date()), title: "Данные обновлены", description: null, amount: null, currency: null, meta: null });
   }
   if (patch.warrantyExpiration && patch.warrantyExpiration !== existing.warrantyExpiration) {
-    await store.addEvent(user.id, { assetId: id, type: "warranty_added", date: toISODate(new Date()), title: "Warranty updated", description: `Valid until ${patch.warrantyExpiration}`, amount: null, currency: null, meta: null });
+    await store.addEvent(user.id, { assetId: id, type: "warranty_added", date: toISODate(new Date()), title: "Гарантия обновлена", description: `Действует до ${patch.warrantyExpiration}`, amount: null, currency: null, meta: null });
   }
   // Re-run valuation if anything price-relevant changed.
   const relevant = ["condition", "model", "manufacturer", "variant", "category", "specs", "catalogId", "purchasePrice", "purchaseDate"] as const;
@@ -142,7 +142,7 @@ export async function deleteAssetAction(id: string): Promise<ActionResult> {
   const store = await getStore();
   const images = await store.listImages(user.id, id);
   const ok = await store.deleteAsset(user.id, id);
-  if (!ok) return { ok: false, error: "Asset not found." };
+  if (!ok) return { ok: false, error: "Актив не найден." };
   const storage = getFileStorage();
   for (const img of images) if (img.storagePath) await storage.remove(img.storagePath).catch(() => {});
   revalidateAll();
@@ -156,9 +156,9 @@ export async function addExpenseAction(raw: unknown): Promise<ActionResult> {
   const d = parsed.data;
   const store = await getStore();
   const asset = await store.getAsset(user.id, d.assetId);
-  if (!asset) return { ok: false, error: "Asset not found." };
+  if (!asset) return { ok: false, error: "Актив не найден." };
   await store.addExpense(user.id, { assetId: d.assetId, type: d.type, amount: d.amount, currency: d.currency as CurrencyCode, date: d.date, title: d.title, notes: d.notes ?? null });
-  await store.addEvent(user.id, { assetId: d.assetId, type: "expense", date: d.date, title: d.title, description: d.type.charAt(0).toUpperCase() + d.type.slice(1), amount: d.amount, currency: d.currency as CurrencyCode, meta: null });
+  await store.addEvent(user.id, { assetId: d.assetId, type: "expense", date: d.date, title: d.title, description: EXPENSE_LABELS[d.type], amount: d.amount, currency: d.currency as CurrencyCode, meta: null });
   revalidateAll(d.assetId);
   return { ok: true, data: undefined };
 }
@@ -167,7 +167,7 @@ export async function deleteExpenseAction(assetId: string, expenseId: string): P
   const user = await requireUser();
   const store = await getStore();
   const ok = await store.deleteExpense(user.id, expenseId);
-  if (!ok) return { ok: false, error: "Expense not found." };
+  if (!ok) return { ok: false, error: "Расход не найден." };
   revalidateAll(assetId);
   return { ok: true, data: undefined };
 }
@@ -179,7 +179,7 @@ export async function setManualValueAction(raw: unknown): Promise<ActionResult> 
   const d = parsed.data;
   const store = await getStore();
   const asset = await store.getAsset(user.id, d.assetId);
-  if (!asset) return { ok: false, error: "Asset not found." };
+  if (!asset) return { ok: false, error: "Актив не найден." };
   const profile = await ensureProfile(store, user);
   const cur = profile.preferredCurrency;
   const value = convert(d.value, d.currency as CurrencyCode, cur);
@@ -194,7 +194,7 @@ export async function setManualValueAction(raw: unknown): Promise<ActionResult> 
     valuationDate: today,
   });
   await store.addValueHistory(user.id, [{ assetId: asset.id, date: today, estimatedValue: Math.round(value), lowEstimate: Math.round(value * 0.95), highEstimate: Math.round(value * 1.05), quickSaleEstimate: Math.round(value * 0.9), currency: cur, source: "manual", confidence: 0.75, comparablesCount: 1 }]);
-  await store.addEvent(user.id, { assetId: asset.id, type: "valuation", date: today, title: "Value set manually", description: null, amount: Math.round(value), currency: cur, meta: null });
+  await store.addEvent(user.id, { assetId: asset.id, type: "valuation", date: today, title: "Стоимость задана вручную", description: null, amount: Math.round(value), currency: cur, meta: null });
   revalidateAll(asset.id);
   return { ok: true, data: undefined };
 }
@@ -203,10 +203,10 @@ export async function refreshValuationAction(assetId: string): Promise<ActionRes
   const user = await requireUser();
   const store = await getStore();
   const asset = await store.getAsset(user.id, assetId);
-  if (!asset) return { ok: false, error: "Asset not found." };
+  if (!asset) return { ok: false, error: "Актив не найден." };
   const profile = await ensureProfile(store, user);
   const { result } = await revalueAsset(store, user.id, asset, profile, { force: true });
-  if (!result) return { ok: false, error: "No market data available for this item right now." };
+  if (!result) return { ok: false, error: "Сейчас нет рыночных данных по этому предмету." };
   track("valuation_viewed", { assetId });
   revalidateAll(assetId);
   return { ok: true, data: undefined };
@@ -219,9 +219,9 @@ export async function markSoldAction(raw: unknown): Promise<ActionResult> {
   const d = parsed.data;
   const store = await getStore();
   const asset = await store.getAsset(user.id, d.assetId);
-  if (!asset) return { ok: false, error: "Asset not found." };
+  if (!asset) return { ok: false, error: "Актив не найден." };
   await store.updateAsset(user.id, asset.id, { status: "sold", soldPrice: d.soldPrice, soldDate: d.soldDate });
-  await store.addEvent(user.id, { assetId: asset.id, type: "sold", date: d.soldDate, title: "Sold", description: null, amount: d.soldPrice, currency: asset.purchaseCurrency, meta: null });
+  await store.addEvent(user.id, { assetId: asset.id, type: "sold", date: d.soldDate, title: "Продано", description: null, amount: d.soldPrice, currency: asset.purchaseCurrency, meta: null });
   track("asset_sold", { category: asset.category });
   revalidateAll(asset.id);
   return { ok: true, data: undefined };
@@ -231,7 +231,7 @@ export async function restoreAssetAction(assetId: string): Promise<ActionResult>
   const user = await requireUser();
   const store = await getStore();
   const asset = await store.getAsset(user.id, assetId);
-  if (!asset) return { ok: false, error: "Asset not found." };
+  if (!asset) return { ok: false, error: "Актив не найден." };
   await store.updateAsset(user.id, asset.id, { status: "active", soldPrice: null, soldDate: null });
   revalidateAll(assetId);
   return { ok: true, data: undefined };

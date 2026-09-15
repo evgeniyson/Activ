@@ -5,13 +5,13 @@ import { ButtonLink } from "@/components/ui/button";
 import { Plus } from "@/components/ui/icons";
 import { getPortfolioOverview } from "@/features/portfolio/service";
 import { ensureProfile } from "@/features/profile/service";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, plural } from "@/lib/format";
 import { getStore } from "@/services/data";
 import { requireUser } from "@/services/auth/session";
 import { SoldAssets } from "@/components/assets/sold-assets";
 import { computeAssetMetrics } from "@/lib/finance";
 
-export const metadata: Metadata = { title: "Assets" };
+export const metadata: Metadata = { title: "Активы" };
 export const dynamic = "force-dynamic";
 
 export default async function AssetsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
@@ -26,11 +26,11 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
     <>
       <PageHeader
         index="002"
-        title="Assets"
-        description={`${overview.totals.assetCount} active · ${formatMoney(overview.totals.currentValue, overview.currency)} estimated`}
+        title="Активы"
+        description={`${plural(overview.totals.assetCount, ["активный", "активных", "активных"])} · оценка ${formatMoney(overview.totals.currentValue, overview.currency)}`}
         action={
           <ButtonLink href="/app/assets/new" variant="accent">
-            <Plus className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" /> Add Asset
+            <Plus className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" /> Добавить актив
           </ButtonLink>
         }
       />

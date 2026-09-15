@@ -13,18 +13,18 @@ export function AuthForm({ mode, next, initialError, localMode }: { mode: "login
 
   return (
     <div>
-      <span className="label-mono text-gray">{mode === "login" ? "Welcome back" : "Get started"}</span>
-      <h1 className="mt-2 text-3xl font-extrabold display-tight sm:text-4xl">{mode === "login" ? "Sign in." : "Create your account."}</h1>
-      <p className="mt-2 text-[15px] text-gray">{mode === "login" ? "Your portfolio is waiting." : "Free while in beta. No card needed."}</p>
+      <span className="label-mono text-gray">{mode === "login" ? "С возвращением" : "Начнём"}</span>
+      <h1 className="mt-2 text-3xl font-extrabold display-tight sm:text-4xl">{mode === "login" ? "Войти." : "Создать аккаунт."}</h1>
+      <p className="mt-2 text-[15px] text-gray">{mode === "login" ? "Ваш портфель ждёт." : "Бесплатно на время беты. Карта не нужна."}</p>
 
-      {localMode ? <p className="mt-5 border border-dashed border-hair-strong px-3 py-2 text-[12px] text-gray">Local demo mode: any email and password signs you in. Connect Supabase for real accounts.</p> : null}
+      {localMode ? <p className="mt-5 border border-dashed border-hair-strong px-3 py-2 text-[12px] text-gray">Локальный демо-режим: подойдут любые email и пароль. Подключите Supabase для настоящих аккаунтов.</p> : null}
 
       <form action={formAction} className="mt-6 flex flex-col gap-4">
         <input type="hidden" name="next" value={next ?? "/app"} />
         <Field label="Email" htmlFor="email">
           <Input id="email" name="email" type="email" autoComplete="email" required placeholder="you@example.com" inputMode="email" />
         </Field>
-        <Field label="Password" htmlFor="password" hint={mode === "signup" ? "8+ characters" : undefined}>
+        <Field label="Пароль" htmlFor="password" hint={mode === "signup" ? "от 8 символов" : undefined}>
           <Input id="password" name="password" type="password" autoComplete={mode === "login" ? "current-password" : "new-password"} required minLength={8} placeholder="••••••••" />
         </Field>
         {state && !state.ok ? (
@@ -38,13 +38,13 @@ export function AuthForm({ mode, next, initialError, localMode }: { mode: "login
           </p>
         ) : null}
         <Button type="submit" size="lg" loading={pending} className="mt-1">
-          {mode === "login" ? "Sign in" : "Create account"}
+          {mode === "login" ? "Войти" : "Создать аккаунт"}
         </Button>
       </form>
 
       <div className="my-5 flex items-center gap-3">
         <span className="h-px flex-1 bg-hair" />
-        <span className="label-mono text-gray-2">or</span>
+        <span className="label-mono text-gray-2">или</span>
         <span className="h-px flex-1 bg-hair" />
       </div>
 
@@ -61,7 +61,7 @@ export function AuthForm({ mode, next, initialError, localMode }: { mode: "login
             })
           }
         >
-          <GoogleGlyph /> Continue with Google
+          <GoogleGlyph /> Продолжить с Google
         </Button>
         {process.env.NEXT_PUBLIC_AUTH_APPLE === "1" ? (
           <Button
@@ -76,7 +76,7 @@ export function AuthForm({ mode, next, initialError, localMode }: { mode: "login
               })
             }
           >
-             Continue with Apple
+             Продолжить с Apple
           </Button>
         ) : null}
       </div>
@@ -84,16 +84,16 @@ export function AuthForm({ mode, next, initialError, localMode }: { mode: "login
       <p className="mt-6 text-sm text-gray">
         {mode === "login" ? (
           <>
-            New here?{" "}
+            Впервые здесь?{" "}
             <Link href="/signup" className="font-semibold text-ink underline-offset-4 hover:underline">
-              Create an account
+              Создать аккаунт
             </Link>
           </>
         ) : (
           <>
-            Already have an account?{" "}
+            Уже есть аккаунт?{" "}
             <Link href="/login" className="font-semibold text-ink underline-offset-4 hover:underline">
-              Sign in
+              Войти
             </Link>
           </>
         )}

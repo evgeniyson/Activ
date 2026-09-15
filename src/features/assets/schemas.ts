@@ -5,8 +5,8 @@ import { CONDITIONS, EXPENSE_TYPES } from "@/types/domain";
 
 const isoDate = z
   .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, "Use a valid date.")
-  .refine((s) => !Number.isNaN(Date.parse(s)), "Use a valid date.");
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Укажите корректную дату.")
+  .refine((s) => !Number.isNaN(Date.parse(s)), "Укажите корректную дату.");
 
 const optionalText = (max: number) =>
   z
@@ -18,7 +18,7 @@ const optionalText = (max: number) =>
     .optional();
 
 export const createAssetSchema = z.object({
-  name: z.string().trim().min(1, "Give the item a name.").max(120),
+  name: z.string().trim().min(1, "Дайте предмету название.").max(120),
   category: z.enum(CATEGORY_IDS as [string, ...string[]]),
   manufacturer: optionalText(80),
   model: optionalText(120),
@@ -26,9 +26,9 @@ export const createAssetSchema = z.object({
   description: optionalText(500),
   specs: z.record(z.string(), z.string().max(120)).default({}),
   catalogId: optionalText(80),
-  purchasePrice: z.coerce.number().min(0, "Enter the price you paid.").max(10_000_000),
+  purchasePrice: z.coerce.number().min(0, "Укажите, сколько вы заплатили.").max(100_000_000),
   purchaseCurrency: z.enum(CURRENCY_CODES as [string, ...string[]]),
-  purchaseDate: isoDate.refine((s) => new Date(s) <= new Date(), "Purchase date can't be in the future."),
+  purchaseDate: isoDate.refine((s) => new Date(s) <= new Date(), "Дата покупки не может быть в будущем."),
   retailer: optionalText(80),
   condition: z.enum(CONDITIONS),
   serialNumber: optionalText(80),
@@ -48,16 +48,16 @@ export const updateAssetSchema = createAssetSchema
 export const expenseSchema = z.object({
   assetId: z.string().min(1),
   type: z.enum(EXPENSE_TYPES),
-  amount: z.coerce.number().positive("Enter an amount."),
+  amount: z.coerce.number().positive("Укажите сумму."),
   currency: z.enum(CURRENCY_CODES as [string, ...string[]]),
   date: isoDate,
-  title: z.string().trim().min(1, "Describe the expense.").max(120),
+  title: z.string().trim().min(1, "Опишите расход.").max(120),
   notes: optionalText(500),
 });
 
 export const manualValueSchema = z.object({
   assetId: z.string().min(1),
-  value: z.coerce.number().positive("Enter a value."),
+  value: z.coerce.number().positive("Укажите стоимость."),
   currency: z.enum(CURRENCY_CODES as [string, ...string[]]),
 });
 

@@ -13,7 +13,7 @@ import type { ProviderEstimate, ValuationProvider, ValuationRequest } from "../t
  */
 export class EbayProvider implements ValuationProvider {
   readonly id = "ebay" as const;
-  readonly name = "eBay listings";
+  readonly name = "Объявления eBay";
   readonly weight = 1.4;
 
   private readonly token = process.env.EBAY_OAUTH_TOKEN;
@@ -74,7 +74,7 @@ export class EbayProvider implements ValuationProvider {
         confidence,
         comparablesCount: core.length,
         currency: req.currency,
-        notes: [`${core.length} active eBay listings in ${marketplaceId(req.region)}.`],
+        notes: [`${core.length} активных объявлений eBay (${marketplaceId(req.region)}).`],
       };
     } catch {
       return null;
@@ -90,10 +90,8 @@ function marketplaceId(region: MarketRegion): string {
       return "EBAY_US";
     case "UK":
       return "EBAY_GB";
-    case "CH":
-      return "EBAY_CH";
-    case "PL":
-      return "EBAY_PL";
+    case "TR":
+      return "EBAY_DE";
     default:
       return "EBAY_DE";
   }

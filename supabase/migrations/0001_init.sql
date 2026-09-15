@@ -12,8 +12,8 @@ create table if not exists public.profiles (
   display_name text,
   avatar_url text,
   country text,
-  preferred_currency text not null default 'EUR',
-  market_region text not null default 'EU',
+  preferred_currency text not null default 'RUB',
+  market_region text not null default 'RU',
   onboarding_completed boolean not null default false,
   notification_prefs jsonb not null default '{"priceChanges":true,"sellOpportunities":true,"warrantyAlerts":true,"monthlyReport":true}'::jsonb,
   created_at timestamptz not null default now(),
@@ -57,7 +57,7 @@ create table if not exists public.assets (
   specs jsonb not null default '{}'::jsonb,
   catalog_id text,
   purchase_price numeric(14,2) not null default 0,
-  purchase_currency text not null default 'EUR',
+  purchase_currency text not null default 'RUB',
   purchase_date date not null,
   retailer text,
   condition text not null default 'excellent',
@@ -66,7 +66,7 @@ create table if not exists public.assets (
   current_high_estimate numeric(14,2),
   quick_sale_value numeric(14,2),
   valuation_confidence numeric(4,3),
-  valuation_currency text not null default 'EUR',
+  valuation_currency text not null default 'RUB',
   valuation_date date,
   identification_confidence numeric(4,3),
   serial_number text,
@@ -116,7 +116,7 @@ create table if not exists public.asset_expenses (
   user_id uuid not null references auth.users (id) on delete cascade,
   type text not null default 'other',
   amount numeric(14,2) not null,
-  currency text not null default 'EUR',
+  currency text not null default 'RUB',
   date date not null,
   title text not null,
   notes text,
@@ -148,7 +148,7 @@ create table if not exists public.asset_value_history (
   low_estimate numeric(14,2) not null,
   high_estimate numeric(14,2) not null,
   quick_sale_estimate numeric(14,2),
-  currency text not null default 'EUR',
+  currency text not null default 'RUB',
   source text not null default 'internal',
   confidence numeric(4,3) not null default 0,
   comparables_count int,
@@ -182,7 +182,7 @@ create table if not exists public.portfolio_snapshots (
   total_value numeric(14,2) not null,
   purchase_value numeric(14,2) not null,
   total_depreciation numeric(14,2) not null,
-  currency text not null default 'EUR',
+  currency text not null default 'RUB',
   asset_count int not null default 0,
   created_at timestamptz not null default now(),
   unique (user_id, date)
@@ -211,11 +211,11 @@ create table if not exists public.valuation_sources (
   weight numeric(4,2) not null default 1
 );
 insert into public.valuation_sources (id, name, description, enabled, weight) values
-  ('internal', 'Internal pricing model', 'Deterministic model built on launch prices, product age, condition, region and seasonality.', true, 1),
-  ('ebay', 'eBay listings', 'Median of active eBay listings in your marketplace region.', false, 1.4),
-  ('marketplace', 'Marketplace data', 'Partner marketplace pricing feed.', false, 1.2),
-  ('manual', 'Manual value', 'Values you set yourself.', true, 3),
-  ('mock', 'Mock provider', 'Deterministic test stub.', false, 0.5)
+  ('internal', 'Внутренняя модель', 'Детерминированная модель: цена на старте продаж, возраст продукта, состояние, регион и сезонность.', true, 1),
+  ('ebay', 'Объявления eBay', 'Медиана активных объявлений eBay в вашем регионе.', false, 1.4),
+  ('marketplace', 'Данные маркетплейсов', 'Партнёрский ценовой фид (Авито и др.).', false, 1.2),
+  ('manual', 'Ручная оценка', 'Значения, которые вы указали сами.', true, 3),
+  ('mock', 'Тестовый провайдер', 'Детерминированная заглушка для тестов.', false, 0.5)
 on conflict (id) do nothing;
 
 -- ── updated_at trigger ────────────────────────────────────────────────

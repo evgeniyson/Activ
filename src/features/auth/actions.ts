@@ -12,8 +12,8 @@ import { createSupabaseServerClient } from "@/services/supabase/server";
 export type AuthResult = { ok: true; message?: string } | { ok: false; error: string };
 
 const credentials = z.object({
-  email: z.string().trim().email("Enter a valid email address."),
-  password: z.string().min(8, "Password must be at least 8 characters."),
+  email: z.string().trim().email("Введите корректный email."),
+  password: z.string().min(8, "Пароль — минимум 8 символов."),
 });
 
 async function origin(): Promise<string> {
@@ -45,7 +45,7 @@ async function startLocalSession(email: string) {
 
 export async function signInWithPassword(_prev: AuthResult | null, formData: FormData): Promise<AuthResult> {
   const parsed = credentials.safeParse({ email: formData.get("email"), password: formData.get("password") });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Некорректные данные." };
   const next = safeNext(formData.get("next"));
 
   if (getDataMode() === "local") {
@@ -69,7 +69,7 @@ export async function signInWithPassword(_prev: AuthResult | null, formData: For
 
 export async function signUpWithPassword(_prev: AuthResult | null, formData: FormData): Promise<AuthResult> {
   const parsed = credentials.safeParse({ email: formData.get("email"), password: formData.get("password") });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Некорректные данные." };
 
   if (getDataMode() === "local") {
     await startLocalSession(parsed.data.email);
@@ -85,7 +85,7 @@ export async function signUpWithPassword(_prev: AuthResult | null, formData: For
   if (error) return { ok: false, error: friendlyAuthError(error.message) };
   track("signup_completed", { mode: "supabase" });
   if (data.session) redirect("/onboarding");
-  return { ok: true, message: "Check your inbox — we sent you a confirmation link." };
+  return { ok: true, message: "Проверьте почту — мы отправили ссылку для подтверждения." };
 }
 
 export async function signInWithOAuth(provider: "google" | "apple", next = "/app"): Promise<AuthResult> {
@@ -98,7 +98,7 @@ export async function signInWithOAuth(provider: "google" | "apple", next = "/app
     provider,
     options: { redirectTo: `${await origin()}/auth/callback?next=${encodeURIComponent(safeNext(next))}` },
   });
-  if (error || !data.url) return { ok: false, error: error?.message ?? "Could not start sign-in." };
+  if (error || !data.url) return { ok: false, error: error?.message ?? "Не удалось начать вход." };
   redirect(data.url);
 }
 
@@ -115,9 +115,9 @@ export async function signOut(): Promise<void> {
 
 function friendlyAuthError(msg: string): string {
   const m = msg.toLowerCase();
-  if (m.includes("invalid login")) return "Wrong email or password.";
-  if (m.includes("already registered")) return "An account with this email already exists. Sign in instead.";
-  if (m.includes("email not confirmed")) return "Please confirm your email first — check your inbox.";
-  if (m.includes("rate limit")) return "Too many attempts. Try again in a minute.";
+  if (m.includes("invalid login")) return "Неверный email или пароль.";
+  if (m.includes("already registered")) return "Аккаунт с таким email уже есть. Войдите.";
+  if (m.includes("email not confirmed")) return "Сначала подтвердите email — проверьте почту.";
+  if (m.includes("rate limit")) return "Слишком много попыток. Попробуйте через минуту.";
   return msg;
 }

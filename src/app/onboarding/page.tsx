@@ -5,7 +5,7 @@ import { ensureProfile } from "@/features/profile/service";
 import { getStore } from "@/services/data";
 import { requireUser } from "@/services/auth/session";
 
-export const metadata: Metadata = { title: "Welcome", robots: { index: false } };
+export const metadata: Metadata = { title: "Добро пожаловать", robots: { index: false } };
 export const dynamic = "force-dynamic";
 
 export default async function OnboardingPage() {

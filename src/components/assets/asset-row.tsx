@@ -36,16 +36,16 @@ export function AssetRow({ asset, metrics, currency, index, change30d }: { asset
         </p>
       </div>
       <div className="hidden w-28 flex-col items-end md:flex">
-        <span className="label-mono text-gray-2">Purchased</span>
+        <span className="label-mono text-gray-2">Куплено</span>
         <span className="tnum text-sm text-gray">{formatMoney(metrics.purchasePrice, currency)}</span>
       </div>
       <div className="hidden w-24 flex-col items-end lg:flex">
-        <span className="label-mono text-gray-2">30D</span>
+        <span className="label-mono text-gray-2">30 дн</span>
         {change30d != null ? <Delta amount={change30d} currency={currency} /> : <span className="text-sm text-gray-2">—</span>}
       </div>
       <div className="flex w-28 flex-col items-end sm:w-32">
         <span className="tnum text-[15px] font-bold">{value != null ? formatMoney(value, currency) : "—"}</span>
-        {metrics.depreciationPct != null ? <Delta ratio={metrics.depreciationPct} currency={currency} /> : <span className="label-mono text-gray-2">Estimating…</span>}
+        {metrics.depreciationPct != null ? <Delta ratio={metrics.depreciationPct} currency={currency} /> : <span className="label-mono text-gray-2">Оцениваем…</span>}
       </div>
     </Link>
   );

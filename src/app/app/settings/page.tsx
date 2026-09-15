@@ -13,7 +13,7 @@ import { signOut } from "@/features/auth/actions";
 import { Button } from "@/components/ui/button";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 
-export const metadata: Metadata = { title: "Settings" };
+export const metadata: Metadata = { title: "Настройки" };
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
@@ -25,14 +25,14 @@ export default async function SettingsPage() {
 
   return (
     <>
-      <PageHeader index="007" title="Settings" description={user.email ?? undefined} />
+      <PageHeader index="007" title="Настройки" description={user.email ?? undefined} />
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="flex flex-col gap-4 lg:col-span-2">
           <SettingsForm profile={profile} />
         </div>
         <div className="flex flex-col gap-4">
           <Panel>
-            <PanelHeader index="V" title="Valuation sources" />
+            <PanelHeader index="V" title="Источники оценки" />
             <ul>
               {sources.map((s) => (
                 <li key={s.id} className="flex items-start justify-between gap-3 border-b border-hair px-5 py-3 last:border-b-0">
@@ -40,23 +40,23 @@ export default async function SettingsPage() {
                     <p className="text-sm font-semibold">{s.name}</p>
                     <p className="text-[12px] text-gray">{s.description}</p>
                   </div>
-                  <Badge tone={s.enabled ? "ink" : "gray"}>{s.enabled ? "On" : "Off"}</Badge>
+                  <Badge tone={s.enabled ? "ink" : "gray"}>{s.enabled ? "Вкл" : "Выкл"}</Badge>
                 </li>
               ))}
             </ul>
           </Panel>
           <Panel>
-            <PanelHeader index="Σ" title="System" />
+            <PanelHeader index="Σ" title="Система" />
             <dl className="divide-y divide-hair px-5 text-sm">
-              <Row k="Data" v={getDataMode() === "supabase" ? "Supabase" : "Local file (dev)"} />
-              <Row k="AI identification" v={hasAnthropicKey() ? "Claude vision" : "Demo provider"} />
-              <Row k="Assets" v={String(assetCount)} />
+              <Row k="Данные" v={getDataMode() === "supabase" ? "Supabase" : "Локальный файл (dev)"} />
+              <Row k="AI-распознавание" v={hasAnthropicKey() ? "Claude vision" : "Демо-провайдер"} />
+              <Row k="Активов" v={String(assetCount)} />
             </dl>
             <div className="px-5 pb-4 pt-2">
               <InstallPrompt className="label-mono flex w-full items-center justify-between border border-ink px-2 py-2 text-ink hover:bg-ink hover:text-paper" />
               <form action={signOut}>
                 <Button type="submit" variant="outline" className="w-full">
-                  Sign out
+                  Выйти
                 </Button>
               </form>
             </div>
