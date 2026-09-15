@@ -246,47 +246,47 @@ alter table public.valuation_sources enable row level security;
 
 drop policy if exists "profiles: own" on public.profiles;
 create policy "profiles: own" on public.profiles
-  for all using (auth.uid() = id) with check (auth.uid() = id);
+  for all using ((select auth.uid()) = id) with check ((select auth.uid()) = id);
 
 drop policy if exists "assets: own" on public.assets;
 create policy "assets: own" on public.assets
-  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
 drop policy if exists "asset_images: own" on public.asset_images;
 create policy "asset_images: own" on public.asset_images
-  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
 drop policy if exists "asset_specs: own" on public.asset_specs;
 create policy "asset_specs: own" on public.asset_specs
-  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
 drop policy if exists "asset_expenses: own" on public.asset_expenses;
 create policy "asset_expenses: own" on public.asset_expenses
-  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
 drop policy if exists "asset_documents: own" on public.asset_documents;
 create policy "asset_documents: own" on public.asset_documents
-  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
 drop policy if exists "asset_value_history: own" on public.asset_value_history;
 create policy "asset_value_history: own" on public.asset_value_history
-  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
 drop policy if exists "asset_events: own" on public.asset_events;
 create policy "asset_events: own" on public.asset_events
-  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
 drop policy if exists "portfolio_snapshots: own" on public.portfolio_snapshots;
 create policy "portfolio_snapshots: own" on public.portfolio_snapshots
-  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
 drop policy if exists "notifications: own" on public.notifications;
 create policy "notifications: own" on public.notifications
-  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
 drop policy if exists "valuation_sources: read" on public.valuation_sources;
 create policy "valuation_sources: read" on public.valuation_sources
-  for select using (auth.role() = 'authenticated');
+  for select using ((select auth.role()) = 'authenticated');
 
 -- ── Storage: private bucket, per-user folders ─────────────────────────
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -295,10 +295,10 @@ on conflict (id) do nothing;
 
 drop policy if exists "asset-files: own folder read" on storage.objects;
 create policy "asset-files: own folder read" on storage.objects
-  for select using (bucket_id = 'asset-files' and (storage.foldername(name))[1] = auth.uid()::text);
+  for select using (bucket_id = 'asset-files' and (storage.foldername(name))[1] = (select auth.uid())::text);
 drop policy if exists "asset-files: own folder write" on storage.objects;
 create policy "asset-files: own folder write" on storage.objects
-  for insert with check (bucket_id = 'asset-files' and (storage.foldername(name))[1] = auth.uid()::text);
+  for insert with check (bucket_id = 'asset-files' and (storage.foldername(name))[1] = (select auth.uid())::text);
 drop policy if exists "asset-files: own folder delete" on storage.objects;
 create policy "asset-files: own folder delete" on storage.objects
-  for delete using (bucket_id = 'asset-files' and (storage.foldername(name))[1] = auth.uid()::text);
+  for delete using (bucket_id = 'asset-files' and (storage.foldername(name))[1] = (select auth.uid())::text);
