@@ -4,7 +4,7 @@ import { CATALOG, matchCatalog, pickVariant } from "@/valuation/catalog";
 import { CATEGORIES, CATEGORY_IDS, isAssetCategory } from "@/types/categories";
 import { IdentificationError, IdentificationSchema, type IdentificationProvider, type IdentificationResult } from "./types";
 
-const MODEL = process.env.ANTHROPIC_VISION_MODEL ?? "claude-opus-5";
+const MODEL = process.env.ANTHROPIC_VISION_MODEL ?? "claude-opus-5-5";
 
 const SYSTEM = `You identify consumer products from a single photo for a personal asset tracker.
 
